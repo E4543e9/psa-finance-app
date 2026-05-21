@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(if \\(-not $?\\) { \"Directory is empty or doesn't exist\" })",
+      "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\AppServ\\\\www\\\\PSA\\\\prisma\")",
+      "PowerShell(\"done\")"
+    ]
+  }
+}

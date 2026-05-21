@@ -1,0 +1,99 @@
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique @db.VarChar(255)
+  password     String        @db.VarChar(255)
+  name         String        @db.VarChar(100)
+  createdAt    DateTime      @default(now())
+  transactions Transaction[]
+  debts        Debt[]
+  budgets      Budget[]
+  categories   Category[]
+}
+
+model Category {
+  id           String        @id @default(cuid())
+  name         String        @db.VarChar(100)
+  type         String        // "INCOME" | "EXPENSE"
+  icon         String?       @db.VarChar(50)
+  color        String?       @db.VarChar(20)
+  userId       String
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+  budgets      Budget[]
+
+  @@index([userId])
+}
+
+model Transaction {
+  id          String    @id @default(cuid())
+  type        String    // "INCOME" | "EXPENSE"
+  amount      Decimal   @db.Decimal(10, 2)
+  description String    @db.VarChar(255)
+  date        DateTime
+  note        String?   @db.Text
+  categoryId  String
+  userId      String
+  category    Category  @relation(fields: [categoryId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([categoryId])
+  @@index([date])
+}
+
+model Debt {
+  id              String        @id @default(cuid())
+  name            String        @db.VarChar(255)
+  creditor        String        @db.VarChar(255)
+  totalAmount     Decimal       @db.Decimal(10, 2)
+  remainingAmount Decimal       @db.Decimal(10, 2)
+  interestRate    Decimal       @db.Decimal(5, 2)
+  monthlyPayment  Decimal       @db.Decimal(10, 2)
+  dueDate         DateTime?
+  status          String        @default("ACTIVE") // "ACTIVE" | "PAID"
+  type            String        // "CREDIT_CARD" | "LOAN" | "BORROW_FROM_PERSON" | "OTHER"
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  payments        DebtPayment[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([userId])
+}
+
+model DebtPayment {
+  id          String   @id @default(cuid())
+  debtId      String
+  amount      Decimal  @db.Decimal(10, 2)
+  paymentDate DateTime
+  note        String?  @db.VarChar(255)
+  debt        Debt     @relation(fields: [debtId], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@index([debtId])
+}
+
+model Budget {
+  id         String   @id @default(cuid())
+  categoryId String
+  amount     Decimal  @db.Decimal(10, 2)
+  month      String   @db.VarChar(7) // "2025-01"
+  userId     String
+  category   Category @relation(fields: [categoryId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@unique([categoryId, month, userId])
+  @@index([userId])
+}
