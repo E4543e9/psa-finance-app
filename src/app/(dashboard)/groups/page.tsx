@@ -89,7 +89,7 @@ export default function GroupsPage() {
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">กลุ่ม / บ้าน</h1>
+          <h1 className="text-2xl font-bold hidden lg:block">กลุ่ม / บ้าน</h1>
           <p className="text-sm text-muted-foreground mt-1">จัดการกลุ่มสำหรับแบ่งค่าใช้จ่าย</p>
         </div>
         <div className="flex gap-2">

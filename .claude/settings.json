@@ -14,7 +14,11 @@
       "PowerShell(cd \"d:\\\\AppServ\\\\www\\\\PSA\"; $token = \\(Get-Content \"$env:APPDATA\\\\com.vercel.cli\\\\auth.json\" 2>$null | ConvertFrom-Json\\).token; if \\(-not $token\\) { Get-Content \"$env:USERPROFILE\\\\.local\\\\share\\\\com.vercel.cli\\\\auth.json\" 2>$null }; echo $token)",
       "Read(//c/Users/User/AppData/Local/com.vercel.cli/**)",
       "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\AppServ\\\\www\\\\PSA\\\\src\\\\app\\\\\\(auth\\)\\\\register\")",
-      "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\AppServ\\\\www\\\\PSA\\\\src\\\\app\\\\api\\\\auth\\\\register\")"
+      "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\AppServ\\\\www\\\\PSA\\\\src\\\\app\\\\api\\\\auth\\\\register\")",
+      "Bash(sed -i 's/<h1 className=\"text-2xl font-bold\">การแจ้งเตือน<\\\\/h1>/<h1 className=\"text-2xl font-bold hidden lg:block\">การแจ้งเตือน<\\\\/h1>/' src/app/\\\\\\(dashboard\\\\\\)/notifications/page.tsx)",
+      "Bash(sed -i 's/<h1 className=\"text-2xl font-bold\">กลุ่ม \\\\/ บ้าน<\\\\/h1>/<h1 className=\"text-2xl font-bold hidden lg:block\">กลุ่ม \\\\/ บ้าน<\\\\/h1>/' src/app/\\\\\\(dashboard\\\\\\)/groups/page.tsx)",
+      "Bash(sed -i 's/<h1 className=\"text-2xl font-bold\">ค่าใช้จ่ายประจำ<\\\\/h1>/<h1 className=\"text-2xl font-bold hidden lg:block\">ค่าใช้จ่ายประจำ<\\\\/h1>/' src/app/\\\\\\(dashboard\\\\\\)/bills/page.tsx)",
+      "Bash(sed -i 's/className=\"text-2xl font-extrabold tracking-tight\">รายรับ-รายจ่าย/className=\"text-2xl font-extrabold tracking-tight hidden lg:block\">รายรับ-รายจ่าย/' src/app/\\\\\\(dashboard\\\\\\)/transactions/page.tsx)"
     ],
     "additionalDirectories": [
       "d:\\AppServ\\www\\PSA\\src\\app\\api\\transactions\\[id]",

@@ -66,7 +66,7 @@ export default function NotificationsPage() {
     <div className="space-y-6 max-w-2xl">
       <div>
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold">การแจ้งเตือน</h1>
+          <h1 className="text-2xl font-bold hidden lg:block">การแจ้งเตือน</h1>
           {pendingCount > 0 && (
             <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-500 text-white text-xs font-bold">
               {pendingCount}

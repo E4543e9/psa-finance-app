@@ -92,7 +92,7 @@ export default function BillsPage() {
       {/* Header */}
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold">ค่าใช้จ่ายประจำ</h1>
+          <h1 className="text-2xl font-bold hidden lg:block">ค่าใช้จ่ายประจำ</h1>
           <p className="text-sm text-muted-foreground mt-1">รายจ่ายรายเดือน/รายสัปดาห์/รายปี</p>
         </div>
         <Button size="sm" onClick={() => setShowAddBill(true)}>

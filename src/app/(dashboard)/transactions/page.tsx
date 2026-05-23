@@ -173,7 +173,7 @@ export default function TransactionsPage() {
       {/* Header — ซ่อน title บน mobile (top bar แสดงแล้ว) */}
       <div className="flex items-center justify-between gap-3">
         <div className="hidden lg:block">
-          <h1 className="text-2xl font-extrabold tracking-tight">รายรับ-รายจ่าย</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight hidden lg:block">รายรับ-รายจ่าย</h1>
         </div>
         <div className="flex items-center gap-2">
           <p className="text-sm text-muted-foreground">ทั้งหมด {total} รายการ</p>
