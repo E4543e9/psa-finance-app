@@ -43,19 +43,17 @@ export function TransactionForm({ initial, onSuccess, onCancel }: Props) {
     formState: { errors },
   } = useForm<TransactionInput>({
     resolver: zodResolver(transactionSchema),
-    defaultValues: initial
-      ? {
-          type: initial.type,
-          amount: parseFloat(initial.amount),
-          description: initial.description,
-          date: format(new Date(initial.date), "yyyy-MM-dd"),
-          categoryId: initial.categoryId,
-          note: initial.note ?? "",
-          paidTo: initial.paidTo ?? "",
-          splitWith: initial.splitWith ?? "",
-          splitAmount: initial.splitAmount ? parseFloat(initial.splitAmount) : undefined,
-        }
-      : { type: "EXPENSE", date: format(new Date(), "yyyy-MM-dd") },
+    defaultValues: {
+      type: initial?.type ?? "EXPENSE",
+      amount: initial?.amount ? parseFloat(initial.amount) : undefined,
+      description: initial?.description ?? "",
+      date: initial?.date ? format(new Date(initial.date), "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd"),
+      categoryId: initial?.categoryId ?? "",
+      note: initial?.note ?? "",
+      paidTo: initial?.paidTo ?? "",
+      splitWith: initial?.splitWith ?? "",
+      splitAmount: initial?.splitAmount ? parseFloat(initial.splitAmount) : undefined,
+    },
   });
 
   const type = watch("type");

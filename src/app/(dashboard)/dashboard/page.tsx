@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { TrendingUp, TrendingDown, ArrowRight, Plus, X } from "lucide-react";
+
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +29,8 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [fabOpen, setFabOpen] = useState(false);
+  const [formType, setFormType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
 
   async function fetchDashboard() {
     const d = await fetch("/api/dashboard/summary").then((r) => r.json());
@@ -266,14 +269,51 @@ export default function DashboardPage() {
 
     </div>
 
-      {/* ── FAB: เพิ่มรายการ ── */}
-      <button
-        onClick={() => setShowForm(true)}
-        className="fixed bottom-20 right-4 lg:bottom-8 lg:right-8 z-40 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
-        aria-label="เพิ่มรายการ"
-      >
-        <Plus size={26} strokeWidth={2.5} />
-      </button>
+      {/* ── Speed dial backdrop ── */}
+      {fabOpen && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setFabOpen(false)}
+        />
+      )}
+
+      {/* ── Speed dial FAB ── */}
+      <div className="fixed bottom-20 right-4 lg:bottom-8 lg:right-8 z-50 flex flex-col items-end gap-3">
+        {/* Sub-actions */}
+        <div className={cn(
+          "flex flex-col items-end gap-2 transition-all duration-200",
+          fabOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-4 pointer-events-none"
+        )}>
+          {/* รายรับ */}
+          <button
+            onClick={() => { setFormType("INCOME"); setShowForm(true); setFabOpen(false); }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-green-500 text-white text-sm font-bold shadow-lg active:scale-95 transition-transform whitespace-nowrap"
+          >
+            <TrendingUp size={16} strokeWidth={2.5} />
+            + รายรับ
+          </button>
+          {/* รายจ่าย */}
+          <button
+            onClick={() => { setFormType("EXPENSE"); setShowForm(true); setFabOpen(false); }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-red-500 text-white text-sm font-bold shadow-lg active:scale-95 transition-transform whitespace-nowrap"
+          >
+            <TrendingDown size={16} strokeWidth={2.5} />
+            − รายจ่าย
+          </button>
+        </div>
+
+        {/* Main FAB */}
+        <button
+          onClick={() => setFabOpen((o) => !o)}
+          className={cn(
+            "w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-xl flex items-center justify-center transition-all duration-200",
+            fabOpen ? "rotate-45 scale-95" : "rotate-0 scale-100 hover:scale-105 active:scale-95"
+          )}
+          aria-label="เพิ่มรายการ"
+        >
+          <Plus size={26} strokeWidth={2.5} />
+        </button>
+      </div>
 
       {/* ── Transaction modal ── */}
       {showForm && (
@@ -281,7 +321,12 @@ export default function DashboardPage() {
           <Card className="w-full sm:max-w-md max-h-[92vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl border-0 sm:border">
             <CardContent className="pt-5 pb-8 px-5">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base font-bold">เพิ่มรายการใหม่</h2>
+                <h2 className={cn(
+                  "text-base font-bold",
+                  formType === "INCOME" ? "text-green-600" : "text-red-500"
+                )}>
+                  {formType === "INCOME" ? "+ เพิ่มรายรับ" : "− เพิ่มรายจ่าย"}
+                </h2>
                 <button
                   onClick={() => setShowForm(false)}
                   className="p-1.5 rounded-full hover:bg-muted transition-colors"
@@ -290,6 +335,7 @@ export default function DashboardPage() {
                 </button>
               </div>
               <TransactionForm
+                initial={{ type: formType }}
                 onSuccess={() => { setShowForm(false); setLoading(true); fetchDashboard(); }}
                 onCancel={() => setShowForm(false)}
               />
