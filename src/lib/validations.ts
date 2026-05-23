@@ -7,6 +7,7 @@ export const transactionSchema = z.object({
   date: z.string().min(1, "กรุณาระบุวันที่"),
   categoryId: z.string().min(1, "กรุณาเลือกหมวดหมู่"),
   note: z.string().max(1000).optional(),
+  paidTo: z.string().max(100).optional(),
 });
 
 export const debtSchema = z.object({
@@ -32,6 +33,23 @@ export const budgetSchema = z.object({
   month: z.string().regex(/^\d{4}-\d{2}$/, "รูปแบบเดือนไม่ถูกต้อง"),
 });
 
+export const monthlyBillSchema = z.object({
+  name: z.string().min(1, "กรุณาระบุชื่อบิล").max(255),
+  amount: z.coerce.number().positive("จำนวนเงินต้องมากกว่า 0"),
+  dueDay: z.coerce.number().int().min(1).max(31),
+  categoryId: z.string().min(1, "กรุณาเลือกหมวดหมู่"),
+  paidTo: z.string().max(100).optional(),
+  note: z.string().max(255).optional(),
+});
+
+export const billPaymentSchema = z.object({
+  amount: z.coerce.number().positive("จำนวนเงินต้องมากกว่า 0"),
+  month: z.string().regex(/^\d{4}-\d{2}$/, "รูปแบบเดือนไม่ถูกต้อง"),
+  status: z.enum(["PAID", "WAITING_REFUND"]).default("PAID"),
+  paidDate: z.string().min(1, "กรุณาระบุวันที่"),
+  note: z.string().max(255).optional(),
+});
+
 export const loginSchema = z.object({
   email: z.string().email("อีเมลไม่ถูกต้อง"),
   password: z.string().min(1, "กรุณาระบุรหัสผ่าน"),
@@ -41,4 +59,6 @@ export type TransactionInput = z.infer<typeof transactionSchema>;
 export type DebtInput = z.infer<typeof debtSchema>;
 export type DebtPaymentInput = z.infer<typeof debtPaymentSchema>;
 export type BudgetInput = z.infer<typeof budgetSchema>;
+export type MonthlyBillInput = z.infer<typeof monthlyBillSchema>;
+export type BillPaymentInput = z.infer<typeof billPaymentSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;

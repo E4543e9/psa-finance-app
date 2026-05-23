@@ -62,6 +62,7 @@ export async function POST(req: NextRequest) {
       description: data.description,
       date: new Date(data.date),
       note: data.note,
+      paidTo: data.paidTo || null,
       categoryId: data.categoryId,
       userId: session.user.id,
     },

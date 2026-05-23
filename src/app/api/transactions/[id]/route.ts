@@ -26,6 +26,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       description: data.description,
       date: new Date(data.date),
       note: data.note,
+      paidTo: data.paidTo || null,
       categoryId: data.categoryId,
     },
     include: { category: true },

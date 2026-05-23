@@ -18,6 +18,7 @@ model User {
   debts        Debt[]
   budgets      Budget[]
   categories   Category[]
+  monthlyBills MonthlyBill[]
 }
 
 model Category {
@@ -30,6 +31,7 @@ model Category {
   user         User          @relation(fields: [userId], references: [id])
   transactions Transaction[]
   budgets      Budget[]
+  monthlyBills MonthlyBill[]
 
   @@index([userId])
 }
@@ -41,6 +43,7 @@ model Transaction {
   description String    @db.VarChar(255)
   date        DateTime
   note        String?   @db.Text
+  paidTo      String?   @db.VarChar(100) // จ่ายให้ / รับจาก
   categoryId  String
   userId      String
   category    Category  @relation(fields: [categoryId], references: [id])
@@ -96,4 +99,41 @@ model Budget {
 
   @@unique([categoryId, month, userId])
   @@index([userId])
+}
+
+// บิลรายเดือน — recurring bills แยกจากหนี้สิน
+model MonthlyBill {
+  id         String       @id @default(cuid())
+  name       String       @db.VarChar(255)
+  amount     Decimal      @db.Decimal(10, 2)
+  dueDay     Int          // วันที่ครบในแต่ละเดือน 1-31
+  paidTo     String?      @db.VarChar(100) // จ่ายให้ใคร
+  categoryId String
+  note       String?      @db.VarChar(255)
+  isActive   Boolean      @default(true)
+  userId     String
+  user       User         @relation(fields: [userId], references: [id])
+  category   Category     @relation(fields: [categoryId], references: [id])
+  payments   BillPayment[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  @@index([userId])
+  @@index([categoryId])
+}
+
+// บันทึกการชำระบิลแต่ละเดือน
+model BillPayment {
+  id        String      @id @default(cuid())
+  billId    String
+  amount    Decimal     @db.Decimal(10, 2)
+  month     String      @db.VarChar(7) // "2025-01"
+  status    String      @default("PAID") // "PAID" | "WAITING_REFUND"
+  paidDate  DateTime
+  note      String?     @db.VarChar(255)
+  bill      MonthlyBill @relation(fields: [billId], references: [id])
+  createdAt DateTime    @default(now())
+
+  @@unique([billId, month])
+  @@index([billId])
 }

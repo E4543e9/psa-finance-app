@@ -40,6 +40,7 @@ export function TransactionForm({ initial, onSuccess, onCancel }: Props) {
           date: format(new Date(initial.date), "yyyy-MM-dd"),
           categoryId: initial.categoryId,
           note: initial.note ?? "",
+          paidTo: initial.paidTo ?? "",
         }
       : {
           type: "EXPENSE",
@@ -145,6 +146,18 @@ export function TransactionForm({ initial, onSuccess, onCancel }: Props) {
           </select>
           {errors.categoryId && <p className="mt-1 text-xs text-destructive">{errors.categoryId.message}</p>}
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">
+          {type === "INCOME" ? "รับจาก (ไม่บังคับ)" : "จ่ายให้ (ไม่บังคับ)"}
+        </label>
+        <input
+          {...register("paidTo")}
+          type="text"
+          className="w-full px-3 py-2 border border-border rounded-lg bg-background text-sm focus:ring-2 focus:ring-ring outline-none"
+          placeholder={type === "INCOME" ? "เช่น ลูกค้า / บริษัท" : "เช่น EARTH / ร้านอาหาร"}
+        />
       </div>
 
       <div>

@@ -6,14 +6,15 @@ import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, ArrowLeftRight, CreditCard,
-  PiggyBank, BarChart3, LogOut, Menu, X, Moon, Sun
+  PiggyBank, BarChart3, LogOut, Menu, X, Moon, Sun, Receipt
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/transactions", label: "รายรับ-รายจ่าย", icon: ArrowLeftRight },
+  { href: "/bills", label: "บิลรายเดือน", icon: Receipt },
   { href: "/debts", label: "หนี้สิน", icon: CreditCard },
   { href: "/budget", label: "งบประมาณ", icon: PiggyBank },
   { href: "/reports", label: "รายงาน", icon: BarChart3 },
@@ -23,6 +24,19 @@ export function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const [pendingBills, setPendingBills] = useState(0);
+
+  useEffect(() => {
+    fetch("/api/bills/pending")
+      .then((r) => r.json())
+      .then((d) => setPendingBills(d.total ?? 0))
+      .catch(() => {});
+    // refresh ทุก 5 นาที
+    const t = setInterval(() => {
+      fetch("/api/bills/pending").then((r) => r.json()).then((d) => setPendingBills(d.total ?? 0)).catch(() => {});
+    }, 300000);
+    return () => clearInterval(t);
+  }, []);
 
   return (
     <>
@@ -79,7 +93,12 @@ export function Sidebar() {
                 )}
               >
                 <Icon size={18} />
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                {item.href === "/bills" && pendingBills > 0 && (
+                  <span className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                    {pendingBills > 9 ? "9+" : pendingBills}
+                  </span>
+                )}
               </Link>
             );
           })}
