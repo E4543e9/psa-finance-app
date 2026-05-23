@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { BillChecklist } from "@/components/dashboard/BillChecklist";
 import { BarChartMonthly } from "@/components/dashboard/BarChartMonthly";
+import { TransactionForm } from "@/components/transactions/TransactionForm";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { TrendingUp, TrendingDown, ArrowRight } from "lucide-react";
+import { TrendingUp, TrendingDown, ArrowRight, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -25,13 +27,15 @@ interface DashboardData {
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
 
-  useEffect(() => {
-    fetch("/api/dashboard/summary")
-      .then((r) => r.json())
-      .then((d) => setData(d))
-      .finally(() => setLoading(false));
-  }, []);
+  async function fetchDashboard() {
+    const d = await fetch("/api/dashboard/summary").then((r) => r.json());
+    setData(d);
+    setLoading(false);
+  }
+
+  useEffect(() => { fetchDashboard(); }, []);
 
   const net = data?.summary.netBalance ?? 0;
   const income = data?.summary.totalIncome ?? 0;
@@ -41,6 +45,7 @@ export default function DashboardPage() {
   const totalDonut = donut.reduce((s, d) => s + d.value, 0);
 
   return (
+    <>
     <div className="space-y-4 max-w-2xl mx-auto lg:max-w-none">
 
       {/* ── Hero balance card ── */}
@@ -260,5 +265,38 @@ export default function DashboardPage() {
       </div>
 
     </div>
+
+      {/* ── FAB: เพิ่มรายการ ── */}
+      <button
+        onClick={() => setShowForm(true)}
+        className="fixed bottom-20 right-4 lg:bottom-8 lg:right-8 z-40 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+        aria-label="เพิ่มรายการ"
+      >
+        <Plus size={26} strokeWidth={2.5} />
+      </button>
+
+      {/* ── Transaction modal ── */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center">
+          <Card className="w-full sm:max-w-md max-h-[92vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl border-0 sm:border">
+            <CardContent className="pt-5 pb-8 px-5">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-base font-bold">เพิ่มรายการใหม่</h2>
+                <button
+                  onClick={() => setShowForm(false)}
+                  className="p-1.5 rounded-full hover:bg-muted transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <TransactionForm
+                onSuccess={() => { setShowForm(false); setLoading(true); fetchDashboard(); }}
+                onCancel={() => setShowForm(false)}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </>
   );
 }
