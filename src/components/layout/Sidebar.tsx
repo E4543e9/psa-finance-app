@@ -6,7 +6,7 @@ import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, ArrowLeftRight, CreditCard,
-  PiggyBank, BarChart3, LogOut, Menu, X, Moon, Sun, Receipt
+  BarChart3, LogOut, Menu, X, Moon, Sun, Receipt, Users, Bell, Lightbulb
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
@@ -14,89 +14,122 @@ import { useTheme } from "next-themes";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/transactions", label: "รายรับ-รายจ่าย", icon: ArrowLeftRight },
-  { href: "/bills", label: "บิลรายเดือน", icon: Receipt },
+  { href: "/bills", label: "ค่าใช้จ่ายประจำ", icon: Receipt },
   { href: "/debts", label: "หนี้สิน", icon: CreditCard },
-  { href: "/budget", label: "งบประมาณ", icon: PiggyBank },
+  { href: "/budget", label: "คำแนะนำการเงิน", icon: Lightbulb },
   { href: "/reports", label: "รายงาน", icon: BarChart3 },
+  { href: "/groups", label: "กลุ่ม / บ้าน", icon: Users },
+  { href: "/notifications", label: "การแจ้งเตือน", icon: Bell },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const { theme, setTheme } = useTheme();
-  const [pendingBills, setPendingBills] = useState(0);
+  const [pendingSplits, setPendingSplits] = useState(0);
+  const [pendingRequests, setPendingRequests] = useState(0);
 
   useEffect(() => {
-    fetch("/api/bills/pending")
-      .then((r) => r.json())
-      .then((d) => setPendingBills(d.total ?? 0))
-      .catch(() => {});
-    // refresh ทุก 5 นาที
-    const t = setInterval(() => {
-      fetch("/api/bills/pending").then((r) => r.json()).then((d) => setPendingBills(d.total ?? 0)).catch(() => {});
-    }, 300000);
-    return () => clearInterval(t);
+    async function fetchNotifications() {
+      try {
+        const [notifRes, splitRes] = await Promise.all([
+          fetch("/api/notifications"),
+          fetch("/api/split-requests"),
+        ]);
+        if (notifRes.ok) {
+          const data = await notifRes.json();
+          setPendingSplits(data.pendingSplits ?? 0);
+        }
+        if (splitRes.ok) {
+          const data = await splitRes.json();
+          const pending = (data.incoming ?? []).filter((r: any) => r.status === "PENDING").length;
+          setPendingRequests(pending);
+        }
+      } catch { /* ignore */ }
+    }
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 60_000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
     <>
-      {/* Mobile overlay */}
       {open && (
-        <div
-          className="fixed inset-0 bg-black/50 z-20 lg:hidden"
-          onClick={() => setOpen(false)}
-        />
+        <div className="fixed inset-0 bg-black/50 z-20 lg:hidden" onClick={() => setOpen(false)} />
       )}
 
-      {/* Mobile toggle button */}
       <button
-        className="fixed top-4 left-4 z-30 lg:hidden p-2 rounded-lg bg-white dark:bg-gray-800 shadow-md"
+        className="fixed top-4 left-4 z-30 lg:hidden p-2 rounded-lg bg-background border border-border shadow-md"
         onClick={() => setOpen(!open)}
       >
         {open ? <X size={20} /> : <Menu size={20} />}
       </button>
 
-      {/* Sidebar */}
-      <aside
-        className={cn(
-          "fixed top-0 left-0 h-full w-64 bg-white dark:bg-gray-900 border-r border-border z-30 flex flex-col transition-transform duration-200",
-          "lg:translate-x-0",
-          open ? "translate-x-0" : "-translate-x-full"
-        )}
-      >
+      <aside className={cn(
+        "fixed top-0 left-0 h-full w-60 bg-background border-r border-border z-30 flex flex-col transition-transform duration-200",
+        "lg:translate-x-0",
+        open ? "translate-x-0" : "-translate-x-full"
+      )}>
         {/* Logo */}
-        <div className="p-6 border-b border-border">
+        <div className="px-5 py-5 border-b border-border">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">💰</span>
+            <div className="w-8 h-8 flex-shrink-0">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                <defs>
+                  <linearGradient id="st" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#60a5fa" /><stop offset="100%" stopColor="#3b82f6" />
+                  </linearGradient>
+                  <linearGradient id="sl" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#1d4ed8" /><stop offset="100%" stopColor="#1e40af" />
+                  </linearGradient>
+                  <linearGradient id="sr" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#2563eb" /><stop offset="100%" stopColor="#1d4ed8" />
+                  </linearGradient>
+                </defs>
+                <polygon points="32,4 56,18 32,32 8,18" fill="url(#st)" />
+                <polygon points="8,18 32,32 32,56 8,42" fill="url(#sl)" />
+                <polygon points="56,18 32,32 32,56 56,42" fill="url(#sr)" />
+              </svg>
+            </div>
             <div>
-              <h1 className="font-bold text-lg leading-tight">PSA Finance</h1>
+              <h1 className="font-bold text-base leading-tight">PSA Finance</h1>
               <p className="text-xs text-muted-foreground">จัดการการเงิน</p>
             </div>
           </div>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = pathname === item.href;
+            const isNotifications = item.href === "/notifications";
+            const isTransactions = item.href === "/transactions";
+
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors",
                   active
                     ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
-                <Icon size={18} />
+                <Icon size={17} />
                 <span className="flex-1">{item.label}</span>
-                {item.href === "/bills" && pendingBills > 0 && (
-                  <span className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                    {pendingBills > 9 ? "9+" : pendingBills}
+                {isNotifications && pendingRequests > 0 && (
+                  <span className={cn("text-xs px-1.5 py-0.5 rounded-full font-bold min-w-5 text-center",
+                    active ? "bg-white/20 text-white" : "bg-red-500 text-white")}>
+                    {pendingRequests}
+                  </span>
+                )}
+                {isTransactions && pendingSplits > 0 && (
+                  <span className={cn("text-xs px-1.5 py-0.5 rounded-full font-bold min-w-5 text-center",
+                    active ? "bg-white/20 text-white" : "bg-amber-500 text-white")}>
+                    {pendingSplits}
                   </span>
                 )}
               </Link>
@@ -104,20 +137,20 @@ export function Sidebar() {
           })}
         </nav>
 
-        {/* Bottom actions */}
-        <div className="p-4 border-t border-border space-y-1">
+        {/* Bottom */}
+        <div className="px-3 py-4 border-t border-border space-y-0.5">
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground w-full transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground w-full transition-colors"
           >
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
             {theme === "dark" ? "Light Mode" : "Dark Mode"}
           </button>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950 w-full transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 w-full transition-colors"
           >
-            <LogOut size={18} />
+            <LogOut size={17} />
             ออกจากระบบ
           </button>
         </div>

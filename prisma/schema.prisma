@@ -9,16 +9,59 @@ generator client {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  email        String        @unique @db.VarChar(255)
-  password     String        @db.VarChar(255)
-  name         String        @db.VarChar(100)
-  createdAt    DateTime      @default(now())
-  transactions Transaction[]
-  debts        Debt[]
-  budgets      Budget[]
-  categories   Category[]
-  monthlyBills MonthlyBill[]
+  id                 String         @id @default(cuid())
+  userId             String         @unique @db.VarChar(50)
+  email              String?        @unique @db.VarChar(255)
+  password           String         @db.VarChar(255)
+  name               String         @db.VarChar(100)
+  createdAt          DateTime       @default(now())
+  transactions       Transaction[]
+  debts              Debt[]
+  budgets            Budget[]
+  categories         Category[]
+  monthlyBills       MonthlyBill[]
+  groupMemberships   GroupMember[]
+  splitRequestsFrom  SplitRequest[] @relation("SplitFrom")
+  splitRequestsTo    SplitRequest[] @relation("SplitTo")
+}
+
+model Group {
+  id        String        @id @default(cuid())
+  name      String        @db.VarChar(100)
+  joinCode  String        @unique @db.VarChar(10)
+  members   GroupMember[]
+  createdAt DateTime      @default(now())
+}
+
+model GroupMember {
+  id       String   @id @default(cuid())
+  groupId  String
+  userId   String
+  role     String   @default("MEMBER") // "OWNER" | "MEMBER"
+  group    Group    @relation(fields: [groupId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+  joinedAt DateTime @default(now())
+
+  @@unique([groupId, userId])
+  @@index([groupId])
+  @@index([userId])
+}
+
+model SplitRequest {
+  id            String    @id @default(cuid())
+  fromUserId    String
+  toUserId      String
+  amount        Decimal   @db.Decimal(10, 2)
+  description   String    @db.VarChar(255)
+  status        String    @default("PENDING") // "PENDING" | "APPROVED" | "REJECTED"
+  transactionId String?
+  fromUser      User      @relation("SplitFrom", fields: [fromUserId], references: [id])
+  toUser        User      @relation("SplitTo", fields: [toUserId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([fromUserId])
+  @@index([toUserId])
 }
 
 model Category {
@@ -37,19 +80,23 @@ model Category {
 }
 
 model Transaction {
-  id          String    @id @default(cuid())
-  type        String    // "INCOME" | "EXPENSE"
-  amount      Decimal   @db.Decimal(10, 2)
-  description String    @db.VarChar(255)
-  date        DateTime
-  note        String?   @db.Text
-  paidTo      String?   @db.VarChar(100) // จ่ายให้ / รับจาก
-  categoryId  String
-  userId      String
-  category    Category  @relation(fields: [categoryId], references: [id])
-  user        User      @relation(fields: [userId], references: [id])
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id              String    @id @default(cuid())
+  type            String    // "INCOME" | "EXPENSE"
+  amount          Decimal   @db.Decimal(10, 2)
+  description     String    @db.VarChar(255)
+  date            DateTime
+  note            String?   @db.Text
+  paidTo          String?   @db.VarChar(255)
+  splitWith       String?   @db.VarChar(255)
+  splitWithUserId String?   @db.VarChar(255)
+  splitAmount     Decimal?  @db.Decimal(10, 2)
+  splitStatus     String?   // "PENDING" | "CONFIRMED"
+  categoryId      String
+  userId          String
+  category        Category  @relation(fields: [categoryId], references: [id])
+  user            User      @relation(fields: [userId], references: [id])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   @@index([userId])
   @@index([categoryId])
@@ -65,8 +112,8 @@ model Debt {
   interestRate    Decimal       @db.Decimal(5, 2)
   monthlyPayment  Decimal       @db.Decimal(10, 2)
   dueDate         DateTime?
-  status          String        @default("ACTIVE") // "ACTIVE" | "PAID"
-  type            String        // "CREDIT_CARD" | "LOAN" | "BORROW_FROM_PERSON" | "OTHER"
+  status          String        @default("ACTIVE")
+  type            String
   userId          String
   user            User          @relation(fields: [userId], references: [id])
   payments        DebtPayment[]
@@ -92,7 +139,7 @@ model Budget {
   id         String   @id @default(cuid())
   categoryId String
   amount     Decimal  @db.Decimal(10, 2)
-  month      String   @db.VarChar(7) // "2025-01"
+  month      String   @db.VarChar(7)
   userId     String
   category   Category @relation(fields: [categoryId], references: [id])
   user       User     @relation(fields: [userId], references: [id])
@@ -101,34 +148,33 @@ model Budget {
   @@index([userId])
 }
 
-// บิลรายเดือน — recurring bills แยกจากหนี้สิน
 model MonthlyBill {
-  id         String       @id @default(cuid())
-  name       String       @db.VarChar(255)
-  amount     Decimal      @db.Decimal(10, 2)
-  dueDay     Int          // วันที่ครบในแต่ละเดือน 1-31
-  paidTo     String?      @db.VarChar(100) // จ่ายให้ใคร
+  id         String        @id @default(cuid())
+  name       String        @db.VarChar(255)
+  amount     Decimal       @db.Decimal(10, 2)
+  isVariable Boolean       @default(false)
+  frequency  String        @default("MONTHLY") // "MONTHLY" | "WEEKLY"
+  dueDay     Int
+  paidTo     String?       @db.VarChar(255)
+  note       String?       @db.VarChar(255)
   categoryId String
-  note       String?      @db.VarChar(255)
-  isActive   Boolean      @default(true)
   userId     String
-  user       User         @relation(fields: [userId], references: [id])
-  category   Category     @relation(fields: [categoryId], references: [id])
+  category   Category      @relation(fields: [categoryId], references: [id])
+  user       User          @relation(fields: [userId], references: [id])
   payments   BillPayment[]
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 
   @@index([userId])
   @@index([categoryId])
 }
 
-// บันทึกการชำระบิลแต่ละเดือน
 model BillPayment {
   id        String      @id @default(cuid())
   billId    String
+  month     String      @db.VarChar(7)
   amount    Decimal     @db.Decimal(10, 2)
-  month     String      @db.VarChar(7) // "2025-01"
-  status    String      @default("PAID") // "PAID" | "WAITING_REFUND"
+  status    String      // "PAID" | "WAITING_REFUND"
   paidDate  DateTime
   note      String?     @db.VarChar(255)
   bill      MonthlyBill @relation(fields: [billId], references: [id])

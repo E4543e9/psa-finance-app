@@ -27,6 +27,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       date: new Date(data.date),
       note: data.note,
       paidTo: data.paidTo || null,
+      splitWith: data.splitWith || null,
+      splitAmount: data.splitWith && data.splitAmount ? data.splitAmount : null,
+      splitStatus: data.splitWith
+        ? (existing.splitStatus ?? "PENDING")
+        : null,
       categoryId: data.categoryId,
     },
     include: { category: true },

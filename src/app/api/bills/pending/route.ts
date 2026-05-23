@@ -2,24 +2,34 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getCurrentMonth } from "@/lib/utils";
+import { format } from "date-fns";
 
-// คืนจำนวนบิลที่ยังไม่ได้จ่ายเดือนนี้ — ใช้สำหรับ badge แจ้งเตือน
 export async function GET() {
   const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ count: 0 });
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const month = getCurrentMonth();
+  const month = format(new Date(), "yyyy-MM");
 
-  const allBills = await prisma.monthlyBill.findMany({
-    where: { userId: session.user.id, isActive: true },
-    include: { payments: { where: { month } } },
+  const bills = await prisma.monthlyBill.findMany({
+    where: { userId: session.user.id },
+    include: {
+      category: true,
+      payments: { where: { month } },
+    },
+    orderBy: { dueDay: "asc" },
   });
 
-  const unpaid = allBills.filter((b) => b.payments.length === 0).length;
-  const waitingRefund = allBills.filter(
-    (b) => b.payments[0]?.status === "WAITING_REFUND"
-  ).length;
+  const pending = bills.filter((b) => b.payments.length === 0);
 
-  return NextResponse.json({ unpaid, waitingRefund, total: unpaid + waitingRefund });
+  return NextResponse.json({
+    count: pending.length,
+    bills: pending.map((b) => ({
+      id: b.id,
+      name: b.name,
+      amount: b.amount.toString(),
+      dueDay: b.dueDay,
+      isVariable: b.isVariable,
+      category: b.category,
+    })),
+  });
 }

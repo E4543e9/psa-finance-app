@@ -38,7 +38,7 @@ export default function ReportsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">รายงาน</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight">รายงาน</h1>
         <p className="text-sm text-muted-foreground mt-1">วิเคราะห์รายรับรายจ่าย</p>
       </div>
 
@@ -89,18 +89,19 @@ export default function ReportsPage() {
           {/* Summary */}
           <div className="grid grid-cols-3 gap-4">
             {[
-              { label: "รายรับรวม", value: data.summary.totalIncome, color: "text-green-600 dark:text-green-400" },
-              { label: "รายจ่ายรวม", value: data.summary.totalExpense, color: "text-red-600 dark:text-red-400" },
+              { label: "รายรับรวม", value: data.summary.totalIncome, color: "text-green-600 dark:text-green-400", border: "border-l-4 border-l-green-500" },
+              { label: "รายจ่ายรวม", value: data.summary.totalExpense, color: "text-red-600 dark:text-red-400", border: "border-l-4 border-l-red-500" },
               {
                 label: "ยอดสุทธิ",
                 value: data.summary.netBalance,
                 color: data.summary.netBalance >= 0 ? "text-blue-600 dark:text-blue-400" : "text-red-600 dark:text-red-400",
+                border: data.summary.netBalance >= 0 ? "border-l-4 border-l-blue-500" : "border-l-4 border-l-red-500",
               },
             ].map((s) => (
-              <Card key={s.label}>
+              <Card key={s.label} className={s.border}>
                 <CardContent className="p-4">
-                  <p className="text-xs text-muted-foreground">{s.label}</p>
-                  <p className={`text-lg font-bold mt-1 ${s.color}`}>{formatCurrency(s.value)}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">{s.label}</p>
+                  <p className={`text-xl font-extrabold ${s.color}`}>{formatCurrency(s.value)}</p>
                 </CardContent>
               </Card>
             ))}

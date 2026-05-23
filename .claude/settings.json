@@ -3,7 +3,22 @@
     "allow": [
       "PowerShell(if \\(-not $?\\) { \"Directory is empty or doesn't exist\" })",
       "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\AppServ\\\\www\\\\PSA\\\\prisma\")",
-      "PowerShell(\"done\")"
+      "PowerShell(\"done\")",
+      "Bash(New-Item -ItemType Directory -Force \"d:\\\\AppServ\\\\www\\\\PSA\\\\src\\\\app\\\\api\\\\transactions\\\\[id]\\\\confirm\")",
+      "Bash(Out-Null)",
+      "Bash(New-Item -ItemType Directory -Force \"d:\\\\AppServ\\\\www\\\\PSA\\\\src\\\\app\\\\api\\\\notifications\")",
+      "PowerShell(cd \"d:\\\\AppServ\\\\www\\\\PSA\"; $env:DATABASE_URL = \"mysql://FGNjRZzLSXrMHwT.root:j8228VBMnf5FVzTN@gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/finance_db?sslaccept=strict\"; npx prisma db push 2>&1)",
+      "Bash(npx tsx -e ' *)",
+      "Bash(DATABASE_URL=\"mysql://FGNjRZzLSXrMHwT.root:OOwI4b2LcKGzZk5d@gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/finance_db?sslaccept=strict\" npx prisma db execute --stdin)",
+      "Bash(DATABASE_URL=\"mysql://FGNjRZzLSXrMHwT.root:OOwI4b2LcKGzZk5d@gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/finance_db?sslaccept=strict\" npx prisma db execute --url \"mysql://FGNjRZzLSXrMHwT.root:OOwI4b2LcKGzZk5d@gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/finance_db?sslaccept=strict\" --stdin)",
+      "PowerShell(cd \"d:\\\\AppServ\\\\www\\\\PSA\"; $token = \\(Get-Content \"$env:APPDATA\\\\com.vercel.cli\\\\auth.json\" 2>$null | ConvertFrom-Json\\).token; if \\(-not $token\\) { Get-Content \"$env:USERPROFILE\\\\.local\\\\share\\\\com.vercel.cli\\\\auth.json\" 2>$null }; echo $token)",
+      "Read(//c/Users/User/AppData/Local/com.vercel.cli/**)",
+      "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\AppServ\\\\www\\\\PSA\\\\src\\\\app\\\\\\(auth\\)\\\\register\")",
+      "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\AppServ\\\\www\\\\PSA\\\\src\\\\app\\\\api\\\\auth\\\\register\")"
+    ],
+    "additionalDirectories": [
+      "d:\\AppServ\\www\\PSA\\src\\app\\api\\transactions\\[id]",
+      "d:\\AppServ\\www\\PSA\\src\\app\\api\\split-requests\\[id]"
     ]
   }
 }

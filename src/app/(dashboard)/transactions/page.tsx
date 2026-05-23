@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { Plus, Pencil, Trash2, Search, Download } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Download, CheckCircle2, Split } from "lucide-react";
 import { toast } from "sonner";
 
 interface Transaction {
@@ -17,6 +17,10 @@ interface Transaction {
   description: string;
   date: string;
   note: string | null;
+  paidTo: string | null;
+  splitWith: string | null;
+  splitAmount: string | null;
+  splitStatus: string | null;
   categoryId: string;
   category: { id: string; name: string; icon: string | null; color: string | null };
 }
@@ -32,6 +36,7 @@ export default function TransactionsPage() {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -62,8 +67,20 @@ export default function TransactionsPage() {
     setDeleting(null);
   }
 
+  async function handleConfirmSplit(id: string) {
+    setConfirming(id);
+    const res = await fetch(`/api/transactions/${id}/confirm`, { method: "PATCH" });
+    if (res.ok) {
+      toast.success("ยืนยันแล้ว");
+      fetchData();
+    } else {
+      toast.error("เกิดข้อผิดพลาด");
+    }
+    setConfirming(null);
+  }
+
   function handleExportCSV() {
-    const header = "วันที่,ประเภท,หมวดหมู่,รายละเอียด,จำนวนเงิน,หมายเหตุ";
+    const header = "วันที่,ประเภท,หมวดหมู่,รายละเอียด,จำนวนเงิน,จ่ายให้,แบ่งกับ,ยอดแบ่ง,สถานะแบ่ง,หมายเหตุ";
     const rows = transactions.map((t) =>
       [
         formatDate(t.date),
@@ -71,6 +88,10 @@ export default function TransactionsPage() {
         t.category.name,
         `"${t.description}"`,
         t.amount,
+        t.paidTo ?? "",
+        t.splitWith ?? "",
+        t.splitAmount ?? "",
+        t.splitStatus ?? "",
         `"${t.note ?? ""}"`,
       ].join(",")
     );
@@ -83,12 +104,22 @@ export default function TransactionsPage() {
     a.click();
   }
 
+  const pendingCount = transactions.filter((t) => t.splitStatus === "PENDING").length;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">รายรับ-รายจ่าย</h1>
-          <p className="text-sm text-muted-foreground mt-1">ทั้งหมด {total} รายการ</p>
+          <h1 className="text-2xl font-extrabold tracking-tight">รายรับ-รายจ่าย</h1>
+          <div className="flex items-center gap-2 mt-1">
+            <p className="text-sm text-muted-foreground">ทั้งหมด {total} รายการ</p>
+            {pendingCount > 0 && (
+              <span className="inline-flex items-center gap-1 text-xs bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium">
+                <Split size={11} />
+                {pendingCount} รายการรอยืนยัน
+              </span>
+            )}
+          </div>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handleExportCSV}>
@@ -103,7 +134,7 @@ export default function TransactionsPage() {
       {/* Form modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-md">
+          <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
             <CardContent className="pt-6">
               <h2 className="text-lg font-semibold mb-4">
                 {editing ? "แก้ไขรายการ" : "เพิ่มรายการใหม่"}
@@ -159,6 +190,7 @@ export default function TransactionsPage() {
                     <th className="text-left p-4">หมวดหมู่</th>
                     <th className="text-left p-4">ประเภท</th>
                     <th className="text-right p-4">จำนวนเงิน</th>
+                    <th className="text-left p-4">แบ่งจ่าย</th>
                     <th className="text-right p-4"></th>
                   </tr>
                 </thead>
@@ -168,10 +200,15 @@ export default function TransactionsPage() {
                       <td className="p-4 text-sm text-muted-foreground whitespace-nowrap">
                         {formatDate(t.date)}
                       </td>
-                      <td className="p-4 text-sm font-medium max-w-48 truncate">
-                        {t.description}
+                      <td className="p-4 text-sm font-semibold max-w-48">
+                        <div className="truncate">{t.description}</div>
+                        {t.paidTo && (
+                          <div className="text-xs text-muted-foreground font-normal mt-0.5 truncate">
+                            → {t.paidTo}
+                          </div>
+                        )}
                       </td>
-                      <td className="p-4 text-sm">
+                      <td className="p-4 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1">
                           {t.category.icon} {t.category.name}
                         </span>
@@ -181,10 +218,45 @@ export default function TransactionsPage() {
                           {t.type === "INCOME" ? "รายรับ" : "รายจ่าย"}
                         </Badge>
                       </td>
-                      <td className={`p-4 text-sm font-semibold text-right whitespace-nowrap ${
+                      <td className={`p-4 text-sm font-extrabold text-right whitespace-nowrap ${
                         t.type === "INCOME" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
                       }`}>
                         {t.type === "INCOME" ? "+" : "-"}{formatCurrency(parseFloat(t.amount))}
+                      </td>
+                      {/* Split column */}
+                      <td className="p-4 text-sm">
+                        {t.splitWith ? (
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Split size={11} />
+                              <span>{t.splitWith}</span>
+                              {t.splitAmount && (
+                                <span className="font-medium text-foreground">
+                                  {formatCurrency(parseFloat(t.splitAmount))}
+                                </span>
+                              )}
+                            </div>
+                            {t.splitStatus === "PENDING" ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 text-xs px-2 text-amber-600 border-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950"
+                                disabled={confirming === t.id}
+                                onClick={() => handleConfirmSplit(t.id)}
+                              >
+                                <CheckCircle2 size={11} />
+                                {confirming === t.id ? "..." : "ยืนยันแล้ว"}
+                              </Button>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                                <CheckCircle2 size={11} />
+                                ยืนยันแล้ว
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
                       </td>
                       <td className="p-4">
                         <div className="flex items-center gap-1 justify-end">

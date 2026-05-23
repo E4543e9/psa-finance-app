@@ -68,7 +68,7 @@ export default function DebtsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">หนี้สิน</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight">หนี้สิน</h1>
           <p className="text-sm text-muted-foreground mt-1">{activeDebts.length} รายการที่ยังค้างอยู่</p>
         </div>
         <Button size="sm" onClick={() => setShowAddDebt(true)}>
@@ -79,14 +79,14 @@ export default function DebtsPage() {
       {/* Summary */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: "หนี้รวม", value: totalOriginal, color: "text-foreground" },
-          { label: "จ่ายไปแล้ว", value: totalPaid, color: "text-green-600 dark:text-green-400" },
-          { label: "คงเหลือ", value: totalRemaining, color: "text-red-600 dark:text-red-400" },
+          { label: "หนี้รวม", value: totalOriginal, color: "text-foreground", border: "border-l-4 border-l-orange-500" },
+          { label: "จ่ายไปแล้ว", value: totalPaid, color: "text-green-600 dark:text-green-400", border: "border-l-4 border-l-green-500" },
+          { label: "คงเหลือ", value: totalRemaining, color: "text-red-600 dark:text-red-400", border: "border-l-4 border-l-red-500" },
         ].map((s) => (
-          <Card key={s.label}>
+          <Card key={s.label} className={s.border}>
             <CardContent className="p-4">
-              <p className="text-xs text-muted-foreground">{s.label}</p>
-              <p className={`text-lg font-bold mt-1 ${s.color}`}>{formatCurrency(s.value)}</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">{s.label}</p>
+              <p className={`text-xl font-extrabold ${s.color}`}>{formatCurrency(s.value)}</p>
             </CardContent>
           </Card>
         ))}
@@ -130,7 +130,7 @@ export default function DebtsPage() {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="font-semibold">{debt.name}</h3>
+                          <h3 className="font-bold">{debt.name}</h3>
                           {daysUntilDue !== null && daysUntilDue <= 7 && daysUntilDue >= 0 && (
                             <Badge variant="destructive" className="text-xs flex items-center gap-1">
                               <AlertCircle size={10} /> ครบ {daysUntilDue}วัน

@@ -19,32 +19,36 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   const data = parsed.data;
 
-  // upsert — ถ้าจ่ายซ้ำเดือนเดิมให้ update แทน
+  // Upsert: ถ้าเดือนนี้มีอยู่แล้วให้ update
   const payment = await prisma.billPayment.upsert({
     where: { billId_month: { billId: params.id, month: data.month } },
     update: {
       amount: data.amount,
       status: data.status,
       paidDate: new Date(data.paidDate),
-      note: data.note,
+      note: data.note || null,
     },
     create: {
       billId: params.id,
-      amount: data.amount,
       month: data.month,
+      amount: data.amount,
       status: data.status,
       paidDate: new Date(data.paidDate),
-      note: data.note,
+      note: data.note || null,
     },
   });
 
-  return NextResponse.json({ ...payment, amount: payment.amount.toString() });
+  return NextResponse.json({ ...payment, amount: payment.amount.toString() }, { status: 201 });
 }
 
-// ยกเลิกการชำระ (ลบ payment ออก)
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const bill = await prisma.monthlyBill.findFirst({
+    where: { id: params.id, userId: session.user.id },
+  });
+  if (!bill) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const { searchParams } = new URL(req.url);
   const month = searchParams.get("month");

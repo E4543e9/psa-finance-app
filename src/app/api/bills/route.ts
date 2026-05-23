@@ -3,20 +3,21 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { monthlyBillSchema } from "@/lib/validations";
-import { getCurrentMonth } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
-  const month = searchParams.get("month") ?? getCurrentMonth();
+  const month = searchParams.get("month"); // "2025-01"
 
   const bills = await prisma.monthlyBill.findMany({
-    where: { userId: session.user.id, isActive: true },
+    where: { userId: session.user.id },
     include: {
       category: true,
-      payments: { where: { month } },
+      payments: month
+        ? { where: { month } }
+        : false,
     },
     orderBy: { dueDay: "asc" },
   });
@@ -25,8 +26,12 @@ export async function GET(req: NextRequest) {
     bills.map((b) => ({
       ...b,
       amount: b.amount.toString(),
-      payment: b.payments[0]
-        ? { ...b.payments[0], amount: b.payments[0].amount.toString() }
+      payment: b.payments?.[0]
+        ? {
+            ...b.payments[0],
+            amount: b.payments[0].amount.toString(),
+            paidDate: b.payments[0].paidDate.toISOString(),
+          }
         : null,
       payments: undefined,
     }))
@@ -49,7 +54,7 @@ export async function POST(req: NextRequest) {
       dueDay: data.dueDay,
       categoryId: data.categoryId,
       paidTo: data.paidTo || null,
-      note: data.note,
+      note: data.note || null,
       userId: session.user.id,
     },
     include: { category: true },
