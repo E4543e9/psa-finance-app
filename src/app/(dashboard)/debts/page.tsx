@@ -68,7 +68,7 @@ export default function DebtsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight">หนี้สิน</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight hidden lg:block">หนี้สิน</h1>
           <p className="text-sm text-muted-foreground mt-1">{activeDebts.length} รายการที่ยังค้างอยู่</p>
         </div>
         <Button size="sm" onClick={() => setShowAddDebt(true)}>

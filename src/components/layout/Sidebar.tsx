@@ -22,6 +22,17 @@ const navItems = [
   { href: "/notifications", label: "การแจ้งเตือน", icon: Bell },
 ];
 
+const PAGE_TITLES: Record<string, string> = {
+  "/dashboard": "Dashboard",
+  "/transactions": "รายรับ-รายจ่าย",
+  "/bills": "ค่าใช้จ่ายประจำ",
+  "/debts": "หนี้สิน",
+  "/budget": "คำแนะนำการเงิน",
+  "/reports": "รายงาน",
+  "/groups": "กลุ่ม / บ้าน",
+  "/notifications": "การแจ้งเตือน",
+};
+
 export function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -52,38 +63,54 @@ export function Sidebar() {
     return () => clearInterval(interval);
   }, []);
 
+  const pageTitle = PAGE_TITLES[pathname] ?? "PSA Finance";
+
   return (
     <>
+      {/* ── Mobile overlay ── */}
       {open && (
-        <div className="fixed inset-0 bg-black/50 z-20 lg:hidden" onClick={() => setOpen(false)} />
+        <div className="fixed inset-0 bg-black/60 z-40 lg:hidden" onClick={() => setOpen(false)} />
       )}
 
-      <button
-        className="fixed top-4 left-4 z-30 lg:hidden p-2 rounded-lg bg-background border border-border shadow-md"
-        onClick={() => setOpen(!open)}
-      >
-        {open ? <X size={20} /> : <Menu size={20} />}
-      </button>
+      {/* ── Mobile top bar ── */}
+      <header className="fixed top-0 left-0 right-0 h-14 z-30 lg:hidden bg-background border-b border-border flex items-center px-4 gap-3">
+        <button
+          onClick={() => setOpen(true)}
+          className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-muted transition-colors flex-shrink-0"
+          aria-label="เมนู"
+        >
+          <Menu size={21} />
+        </button>
+        <span className="font-bold text-base flex-1 truncate">{pageTitle}</span>
+        {(pendingSplits + pendingRequests) > 0 && (
+          <Link href="/notifications">
+            <span className="w-6 h-6 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center">
+              {pendingSplits + pendingRequests}
+            </span>
+          </Link>
+        )}
+      </header>
 
+      {/* ── Sidebar drawer ── */}
       <aside className={cn(
-        "fixed top-0 left-0 h-full w-60 bg-background border-r border-border z-30 flex flex-col transition-transform duration-200",
-        "lg:translate-x-0",
+        "fixed top-0 left-0 h-full w-64 bg-background border-r border-border z-50 flex flex-col transition-transform duration-200 shadow-xl",
+        "lg:shadow-none lg:translate-x-0 lg:z-30",
         open ? "translate-x-0" : "-translate-x-full"
       )}>
-        {/* Logo */}
-        <div className="px-5 py-5 border-b border-border">
+        {/* Logo + close */}
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 flex-shrink-0">
               <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
                 <defs>
                   <linearGradient id="st" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#60a5fa" /><stop offset="100%" stopColor="#3b82f6" />
+                    <stop offset="0%" stopColor="#4ade80" /><stop offset="100%" stopColor="#16a34a" />
                   </linearGradient>
                   <linearGradient id="sl" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#1d4ed8" /><stop offset="100%" stopColor="#1e40af" />
+                    <stop offset="0%" stopColor="#15803d" /><stop offset="100%" stopColor="#166534" />
                   </linearGradient>
                   <linearGradient id="sr" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#2563eb" /><stop offset="100%" stopColor="#1d4ed8" />
+                    <stop offset="0%" stopColor="#16a34a" /><stop offset="100%" stopColor="#15803d" />
                   </linearGradient>
                 </defs>
                 <polygon points="32,4 56,18 32,32 8,18" fill="url(#st)" />
@@ -96,10 +123,16 @@ export function Sidebar() {
               <p className="text-xs text-muted-foreground">จัดการการเงิน</p>
             </div>
           </div>
+          <button
+            onClick={() => setOpen(false)}
+            className="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
+          >
+            <X size={18} />
+          </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+        <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = pathname === item.href;
@@ -112,7 +145,7 @@ export function Sidebar() {
                 href={item.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors",
                   active
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -138,17 +171,17 @@ export function Sidebar() {
         </nav>
 
         {/* Bottom */}
-        <div className="px-3 py-4 border-t border-border space-y-0.5">
+        <div className="px-3 py-3 border-t border-border space-y-0.5">
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground w-full transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground w-full transition-colors"
           >
             {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
             {theme === "dark" ? "Light Mode" : "Dark Mode"}
           </button>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 w-full transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 w-full transition-colors"
           >
             <LogOut size={17} />
             ออกจากระบบ

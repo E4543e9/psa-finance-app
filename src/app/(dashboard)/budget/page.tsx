@@ -177,7 +177,7 @@ export default function BudgetPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight">คำแนะนำการเงิน</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight hidden lg:block">คำแนะนำการเงิน</h1>
         <p className="text-sm text-muted-foreground mt-1">วิเคราะห์จากข้อมูลจริงของคุณ</p>
       </div>
 

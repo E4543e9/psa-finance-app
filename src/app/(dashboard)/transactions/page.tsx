@@ -170,21 +170,21 @@ export default function TransactionsPage() {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      {/* Header — ซ่อน title บน mobile (top bar แสดงแล้ว) */}
+      <div className="flex items-center justify-between gap-3">
+        <div className="hidden lg:block">
           <h1 className="text-2xl font-extrabold tracking-tight">รายรับ-รายจ่าย</h1>
-          <div className="flex items-center gap-2 mt-1">
-            <p className="text-sm text-muted-foreground">ทั้งหมด {total} รายการ</p>
-            {pendingCount > 0 && (
-              <span className="inline-flex items-center gap-1 text-xs bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium">
-                <Split size={11} />
-                {pendingCount} รอยืนยัน
-              </span>
-            )}
-          </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
+          <p className="text-sm text-muted-foreground">ทั้งหมด {total} รายการ</p>
+          {pendingCount > 0 && (
+            <span className="inline-flex items-center gap-1 text-xs bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium">
+              <Split size={11} />
+              {pendingCount} รอยืนยัน
+            </span>
+          )}
+        </div>
+        <div className="flex gap-2 ml-auto">
           <Button variant="outline" size="sm" onClick={handleExportCSV} className="hidden sm:flex">
             <Download size={16} /> CSV
           </Button>
