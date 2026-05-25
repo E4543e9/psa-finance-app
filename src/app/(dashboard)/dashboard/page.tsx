@@ -1,14 +1,12 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
-import { TransactionForm } from "@/components/transactions/TransactionForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { ChevronRight, X, Plus } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
-import { Card, CardContent } from "@/components/ui/card";
 
 interface DashboardData {
   summary: { totalIncome: number; totalExpense: number; netBalance: number; totalDebt: number };
@@ -32,8 +30,6 @@ export default function DashboardPage() {
   const [bills, setBills] = useState<Bill[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [formType, setFormType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
 
   async function fetchAll() {
     setLoading(true);
@@ -278,44 +274,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* quick add FAB */}
-        <div className="fixed bottom-28 right-4 lg:bottom-8 lg:right-8 z-40 flex flex-col items-end gap-2">
-          <button onClick={() => { setFormType("INCOME"); setShowForm(true); }}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-bold shadow-lg"
-            style={{ background: "hsl(var(--positive))", color: "#fff" }}>
-            <Plus size={14} strokeWidth={2.5} /> รายรับ
-          </button>
-          <button onClick={() => { setFormType("EXPENSE"); setShowForm(true); }}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-bold shadow-lg"
-            style={{ background: "hsl(var(--negative))", color: "#fff" }}>
-            <Plus size={14} strokeWidth={2.5} /> รายจ่าย
-          </button>
-        </div>
-
       </div>
-
-      {/* ── Transaction modal ── */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center">
-          <Card className="w-full sm:max-w-md max-h-[92vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl border-0 sm:border">
-            <CardContent className="pt-5 pb-8 px-5">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className={cn("text-base font-semibold", formType === "INCOME" ? "text-positive" : "text-negative")}>
-                  {formType === "INCOME" ? "+ เพิ่มรายรับ" : "− เพิ่มรายจ่าย"}
-                </h2>
-                <button onClick={() => setShowForm(false)} className="p-1.5 rounded-full hover:bg-muted transition-colors">
-                  <X size={18} />
-                </button>
-              </div>
-              <TransactionForm
-                initial={{ type: formType }}
-                onSuccess={() => { setShowForm(false); fetchAll(); }}
-                onCancel={() => setShowForm(false)}
-              />
-            </CardContent>
-          </Card>
-        </div>
-      )}
     </>
   );
 }

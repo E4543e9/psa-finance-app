@@ -86,13 +86,16 @@ export function Sidebar() {
           psa<span style={{ color: "#FF5B36" }}>.</span>
           <span className="font-normal text-muted-foreground ml-1.5">{pageTitle}</span>
         </span>
-        {(pendingSplits + pendingRequests) > 0 && (
-          <Link href="/notifications">
-            <span className="h-6 min-w-6 px-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
-              {pendingSplits + pendingRequests}
+        <Link href="/notifications"
+          className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-muted/60 hover:bg-muted transition-colors flex-shrink-0"
+        >
+          <Bell size={18} strokeWidth={1.8} />
+          {(pendingSplits + pendingRequests) > 0 && (
+            <span className="absolute -top-1 -right-1 h-4 min-w-4 px-0.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
+              {pendingSplits + pendingRequests > 9 ? "9+" : pendingSplits + pendingRequests}
             </span>
-          </Link>
-        )}
+          )}
+        </Link>
       </header>
 
       {/* ── Sidebar drawer ── */}
