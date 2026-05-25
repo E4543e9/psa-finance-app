@@ -4,7 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -13,13 +14,13 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (!parsed.success) return NextResponse.json({ error: "action ไม่ถูกต้อง" }, { status: 400 });
 
   const request = await prisma.splitRequest.findFirst({
-    where: { id: params.id, toUserId: session.user.id },
+    where: { id, toUserId: session.user.id },
   });
   if (!request) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (request.status !== "PENDING") return NextResponse.json({ error: "ดำเนินการแล้ว" }, { status: 400 });
 
   const updated = await prisma.splitRequest.update({
-    where: { id: params.id },
+    where: { id },
     data: { status: parsed.data.action },
   });
 

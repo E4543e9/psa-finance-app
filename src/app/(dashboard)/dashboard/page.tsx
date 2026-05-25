@@ -80,8 +80,6 @@ export default function DashboardPage() {
                 <p className="text-sm font-semibold mono">{formatCurrency(income)}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "hsl(var(--negative) / 0.2)" }}>
                 <TrendingDown size={15} style={{ color: "hsl(var(--negative))" }} />

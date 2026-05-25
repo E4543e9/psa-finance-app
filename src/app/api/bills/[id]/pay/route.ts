@@ -4,12 +4,13 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { billPaymentSchema } from "@/lib/validations";
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const bill = await prisma.monthlyBill.findFirst({
-    where: { id: params.id, userId: session.user.id },
+    where: { id, userId: session.user.id },
   });
   if (!bill) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   // Upsert: ถ้าเดือนนี้มีอยู่แล้วให้ update
   const payment = await prisma.billPayment.upsert({
-    where: { billId_month: { billId: params.id, month: data.month } },
+    where: { billId_month: { billId: id, month: data.month } },
     update: {
       amount: data.amount,
       status: data.status,
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       note: data.note || null,
     },
     create: {
-      billId: params.id,
+      billId: id,
       month: data.month,
       amount: data.amount,
       status: data.status,
@@ -41,12 +42,13 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   return NextResponse.json({ ...payment, amount: payment.amount.toString() }, { status: 201 });
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const bill = await prisma.monthlyBill.findFirst({
-    where: { id: params.id, userId: session.user.id },
+    where: { id, userId: session.user.id },
   });
   if (!bill) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
@@ -55,7 +57,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   if (!month) return NextResponse.json({ error: "month required" }, { status: 400 });
 
   await prisma.billPayment.deleteMany({
-    where: { billId: params.id, month },
+    where: { billId: id, month },
   });
 
   return NextResponse.json({ success: true });
