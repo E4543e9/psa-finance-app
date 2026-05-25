@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ArrowLeftRight, Plus, PiggyBank, BarChart3 } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, Plus, PiggyBank } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const mainNav = [
@@ -10,7 +10,6 @@ const mainNav = [
   { href: "/transactions", label: "รายการ",   icon: ArrowLeftRight },
   { href: "ADD",           label: "",          icon: Plus },
   { href: "/budget",       label: "ออม",      icon: PiggyBank },
-  { href: "/reports",      label: "รายงาน",   icon: BarChart3 },
 ];
 
 export function MobileNav() {
@@ -19,7 +18,7 @@ export function MobileNav() {
   return (
     <nav className="fixed bottom-7 left-3.5 right-3.5 z-40 lg:hidden">
       <div
-        className="h-16 rounded-[22px] grid grid-cols-5 items-center px-2.5"
+        className="h-16 rounded-[22px] grid grid-cols-4 items-center px-2.5"
         style={{ background: "hsl(var(--ink-card))", boxShadow: "0 24px 60px rgba(0,0,0,0.22)" }}
       >
         {mainNav.map((item) => {

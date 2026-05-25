@@ -16,8 +16,7 @@ const navItems = [
   { href: "/transactions", label: "รายรับ-รายจ่าย", icon: ArrowLeftRight },
   { href: "/bills", label: "ค่าใช้จ่ายประจำ", icon: Receipt },
   { href: "/debts", label: "หนี้สิน", icon: CreditCard },
-  { href: "/budget", label: "คำแนะนำการเงิน", icon: Lightbulb },
-  { href: "/reports", label: "รายงาน", icon: BarChart3 },
+  { href: "/budget", label: "เป้าหมายการออม", icon: Lightbulb },
   { href: "/groups", label: "กลุ่ม / บ้าน", icon: Users },
   { href: "/notifications", label: "การแจ้งเตือน", icon: Bell },
 ];
@@ -27,8 +26,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/transactions": "รายรับ-รายจ่าย",
   "/bills": "ค่าใช้จ่ายประจำ",
   "/debts": "หนี้สิน",
-  "/budget": "คำแนะนำการเงิน",
-  "/reports": "รายงาน",
+  "/budget": "เป้าหมายการออม",
   "/groups": "กลุ่ม / บ้าน",
   "/notifications": "การแจ้งเตือน",
 };

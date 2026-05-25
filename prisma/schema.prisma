@@ -23,6 +23,7 @@ model User {
   groupMemberships   GroupMember[]
   splitRequestsFrom  SplitRequest[] @relation("SplitFrom")
   splitRequestsTo    SplitRequest[] @relation("SplitTo")
+  savingsGoals       SavingsGoal[]
 }
 
 model Group {
@@ -182,4 +183,21 @@ model BillPayment {
 
   @@unique([billId, month])
   @@index([billId])
+}
+
+model SavingsGoal {
+  id           String    @id @default(cuid())
+  name         String    @db.VarChar(255)
+  emoji        String    @default("🎯") @db.VarChar(10)
+  targetAmount Decimal   @db.Decimal(10, 2)
+  savedAmount  Decimal   @default(0) @db.Decimal(10, 2)
+  deadline     DateTime?
+  weeklyTarget Decimal?  @db.Decimal(10, 2)
+  color        String    @default("#FF5B36") @db.VarChar(20)
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([userId])
 }
