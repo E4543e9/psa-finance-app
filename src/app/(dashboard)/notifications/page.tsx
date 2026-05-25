@@ -138,7 +138,7 @@ export default function NotificationsPage() {
                     </p>
                   </div>
                   <p className="text-base font-bold text-red-500 whitespace-nowrap">
-                    {formatCurrency(parseFloat(r.amount))}
+                    ฿{formatCurrency(parseFloat(r.amount))}
                   </p>
                 </div>
 

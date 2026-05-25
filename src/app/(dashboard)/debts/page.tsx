@@ -86,7 +86,7 @@ export default function DebtsPage() {
           <Card key={s.label} className={s.border}>
             <CardContent className="p-4">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">{s.label}</p>
-              <p className={`text-xl font-extrabold ${s.color}`}>{formatCurrency(s.value)}</p>
+              <p className={`text-xl font-extrabold ${s.color}`}>฿{formatCurrency(s.value)}</p>
             </CardContent>
           </Card>
         ))}
@@ -149,12 +149,12 @@ export default function DebtsPage() {
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">จ่ายไปแล้ว {paidPct}%</span>
                       <span className="font-medium text-red-600 dark:text-red-400">
-                        คงเหลือ {formatCurrency(remaining)}
+                        คงเหลือ ฿{formatCurrency(remaining)}
                       </span>
                     </div>
                     <Progress value={paidPct} className="h-2" />
                     <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>รวม {formatCurrency(total)}</span>
+                      <span>รวม ฿{formatCurrency(total)}</span>
                       <span>
                         {parseFloat(debt.monthlyPayment) > 0 && `~${monthsLeft} เดือน`}
                         {debt.dueDate && ` · ครบ ${formatDate(debt.dueDate)}`}
@@ -177,7 +177,7 @@ export default function DebtsPage() {
               <Card key={d.id} className="opacity-60">
                 <CardContent className="p-4 flex items-center justify-between">
                   <p className="font-medium text-sm">{d.name}</p>
-                  <Badge variant="success">{formatCurrency(parseFloat(d.totalAmount))}</Badge>
+                  <Badge variant="success">฿{formatCurrency(parseFloat(d.totalAmount))}</Badge>
                 </CardContent>
               </Card>
             ))}
@@ -298,7 +298,7 @@ function PaymentModal({ debt, onSuccess, onCancel }: { debt: Debt; onSuccess: ()
       <Card className="w-full max-w-sm">
         <CardHeader><CardTitle>บันทึกการชำระ — {debt.name}</CardTitle></CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">คงเหลือ {formatCurrency(parseFloat(debt.remainingAmount))}</p>
+          <p className="text-sm text-muted-foreground mb-4">คงเหลือ ฿{formatCurrency(parseFloat(debt.remainingAmount))}</p>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-1">จำนวนเงิน (฿)</label>

@@ -67,7 +67,7 @@ export function SummaryCards({ data, loading }: SummaryCardsProps) {
               {card.label}
             </p>
             <p className={cn("text-2xl font-extrabold tracking-tight", card.color)}>
-              {formatCurrency(card.value)}
+              ฿{formatCurrency(card.value)}
             </p>
           </CardContent>
         </Card>

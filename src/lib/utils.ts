@@ -5,14 +5,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// แสดงเงินบาทไทย
+// แสดงเงินบาทไทย — returns number only (no ฿), callers add ฿ manually.
+// Uses manual formatting to avoid Intl locale mismatch between Node.js SSR and browser.
 export function formatCurrency(amount: number | string): string {
   const num = typeof amount === "string" ? parseFloat(amount) : amount;
-  return new Intl.NumberFormat("th-TH", {
-    style: "currency",
-    currency: "THB",
-    minimumFractionDigits: 2,
-  }).format(num);
+  if (isNaN(num)) return "0.00";
+  const [int, dec] = num.toFixed(2).split(".");
+  const intFormatted = int.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return `${intFormatted}.${dec}`;
 }
 
 // แสดงวันที่ไทย

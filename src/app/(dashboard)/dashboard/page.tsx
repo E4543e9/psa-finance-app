@@ -115,11 +115,11 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-[11px] font-medium mb-0.5 opacity-50">รายรับ</p>
-                <p className="text-base font-extrabold mono">฿{formatCurrency(income)}</p>
+                <p className="text-base font-extrabold mono">{formatCurrency(income)}</p>
               </div>
               <div className="text-right">
                 <p className="text-[11px] font-medium mb-0.5 opacity-50">รายจ่าย</p>
-                <p className="text-base font-extrabold mono">฿{formatCurrency(expense)}</p>
+                <p className="text-base font-extrabold mono">{formatCurrency(expense)}</p>
               </div>
             </div>
           </div>

@@ -74,28 +74,35 @@ export function Sidebar() {
       )}
 
       {/* ── Mobile top bar ── */}
-      <header className="fixed top-0 left-0 right-0 h-14 z-30 lg:hidden bg-background/90 backdrop-blur-md border-b border-border flex items-center px-4 gap-3">
-        <button
-          onClick={() => setOpen(true)}
-          className="w-9 h-9 flex items-center justify-center rounded-xl bg-muted/60 hover:bg-muted transition-colors flex-shrink-0"
-          aria-label="เมนู"
-        >
-          <Menu size={18} strokeWidth={1.8} />
-        </button>
-        <span className="font-bold text-sm flex-1 truncate tracking-tight">
-          psa<span style={{ color: "#FF5B36" }}>.</span>
-          <span className="font-normal text-muted-foreground ml-1.5">{pageTitle}</span>
-        </span>
-        <Link href="/notifications"
-          className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-muted/60 hover:bg-muted transition-colors flex-shrink-0"
-        >
-          <Bell size={18} strokeWidth={1.8} />
-          {(pendingSplits + pendingRequests) > 0 && (
-            <span className="absolute -top-1 -right-1 h-4 min-w-4 px-0.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
-              {pendingSplits + pendingRequests > 9 ? "9+" : pendingSplits + pendingRequests}
-            </span>
-          )}
-        </Link>
+      {/* Extends to top-0 so background fills behind Dynamic Island / notch,
+          then a safe-area spacer pushes the actual content below it.          */}
+      <header className="fixed top-0 left-0 right-0 z-30 lg:hidden bg-background/90 backdrop-blur-md border-b border-border">
+        {/* Safe-area spacer — fills behind Dynamic Island / notch */}
+        <div style={{ height: "env(safe-area-inset-top, 0px)" }} />
+        {/* Actual header content */}
+        <div className="h-14 flex items-center px-4 gap-3">
+          <button
+            onClick={() => setOpen(true)}
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-muted/60 hover:bg-muted transition-colors flex-shrink-0"
+            aria-label="เมนู"
+          >
+            <Menu size={18} strokeWidth={1.8} />
+          </button>
+          <span className="font-bold text-sm flex-1 truncate tracking-tight">
+            psa<span style={{ color: "#FF5B36" }}>.</span>
+            <span className="font-normal text-muted-foreground ml-1.5">{pageTitle}</span>
+          </span>
+          <Link href="/notifications"
+            className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-muted/60 hover:bg-muted transition-colors flex-shrink-0"
+          >
+            <Bell size={18} strokeWidth={1.8} />
+            {(pendingSplits + pendingRequests) > 0 && (
+              <span className="absolute -top-1 -right-1 h-4 min-w-4 px-0.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
+                {pendingSplits + pendingRequests > 9 ? "9+" : pendingSplits + pendingRequests}
+              </span>
+            )}
+          </Link>
+        </div>
       </header>
 
       {/* ── Sidebar drawer ── */}

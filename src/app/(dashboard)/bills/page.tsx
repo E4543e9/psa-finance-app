@@ -128,7 +128,7 @@ export default function BillsPage() {
                     isCurrent ? "border-primary bg-primary/5" : "border-border"
                   }`}>
                   <p className="text-sm font-semibold">{format(m, "MMMM", { locale: th })}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{formatCurrency(totalBudget)}/เดือน</p>
+                  <p className="text-xs text-muted-foreground mt-1">฿{formatCurrency(totalBudget)}/เดือน</p>
                   {isPast && !isCurrent && (
                     <Badge variant="outline" className="text-xs mt-2">ผ่านไปแล้ว</Badge>
                   )}
@@ -142,15 +142,15 @@ export default function BillsPage() {
               <p className="text-sm text-muted-foreground mb-3">สรุปประมาณการทั้งปี {currentYear}</p>
               <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <p className="text-2xl font-bold">{formatCurrency(totalBudget * 12)}</p>
+                  <p className="text-2xl font-bold">฿{formatCurrency(totalBudget * 12)}</p>
                   <p className="text-xs text-muted-foreground mt-1">รายจ่ายประจำรวม/ปี</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{formatCurrency(totalBudget)}</p>
+                  <p className="text-2xl font-bold">฿{formatCurrency(totalBudget)}</p>
                   <p className="text-xs text-muted-foreground mt-1">เฉลี่ย/เดือน</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{formatCurrency(dailyCost)}</p>
+                  <p className="text-2xl font-bold">฿{formatCurrency(dailyCost)}</p>
                   <p className="text-xs text-muted-foreground mt-1">เฉลี่ย/วัน</p>
                 </div>
               </div>
@@ -180,10 +180,10 @@ export default function BillsPage() {
           {/* Summary stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { label: "งบรวม/เดือน", value: formatCurrency(totalBudget), sub: null },
-              { label: "จ่ายแล้ว", value: formatCurrency(totalPaid), sub: `${paid.length + waitingRefund.length}/${bills.length} รายการ` },
-              { label: "ค้างอยู่", value: formatCurrency(totalBudget - totalPaid), sub: `${unpaid.length} รายการ` },
-              { label: "เฉลี่ย/วัน", value: formatCurrency(dailyCost), sub: `${formatCurrency(weeklyCost)}/สัปดาห์` },
+              { label: "งบรวม/เดือน", value: `฿${formatCurrency(totalBudget)}`, sub: null },
+              { label: "จ่ายแล้ว", value: `฿${formatCurrency(totalPaid)}`, sub: `${paid.length + waitingRefund.length}/${bills.length} รายการ` },
+              { label: "ค้างอยู่", value: `฿${formatCurrency(totalBudget - totalPaid)}`, sub: `${unpaid.length} รายการ` },
+              { label: "เฉลี่ย/วัน", value: `฿${formatCurrency(dailyCost)}`, sub: `฿${formatCurrency(weeklyCost)}/สัปดาห์` },
             ].map((s) => (
               <Card key={s.label}>
                 <CardContent className="p-4">
@@ -271,9 +271,9 @@ function BillCard({ bill, onPay, onUnpay }: { bill: BillItem; onPay: () => void;
           </div>
           <div className="flex items-center gap-3 flex-shrink-0">
             <div className="text-right">
-              <p className="text-sm font-bold">{formatCurrency(parseFloat(bill.payment?.amount ?? bill.amount))}</p>
+              <p className="text-sm font-bold">฿{formatCurrency(parseFloat(bill.payment?.amount ?? bill.amount))}</p>
               {bill.payment && bill.payment.amount !== bill.amount && (
-                <p className="text-xs text-muted-foreground line-through">{formatCurrency(parseFloat(bill.amount))}</p>
+                <p className="text-xs text-muted-foreground line-through">฿{formatCurrency(parseFloat(bill.amount))}</p>
               )}
             </div>
             {!bill.payment ? (

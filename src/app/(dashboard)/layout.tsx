@@ -12,8 +12,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <div className="min-h-screen bg-background">
       <Sidebar />
       <main className="lg:ml-64 min-h-screen">
-        {/* pt-14 = mobile top bar height, pb-20 = mobile bottom nav + safe area */}
-        <div className="p-4 lg:p-8 pt-[72px] lg:pt-8 pb-safe-nav">
+        {/* pt-safe-header = h-14 header + env(safe-area-inset-top) for notch/Dynamic Island */}
+        <div className="p-4 lg:p-8 pt-safe-header pb-safe-nav">
           {children}
         </div>
       </main>

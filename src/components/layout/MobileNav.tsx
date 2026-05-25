@@ -97,10 +97,7 @@ export function MobileNav() {
   return (
     <>
       {/* ── Tab bar ── */}
-      <nav
-        className="fixed left-3.5 right-3.5 z-40 lg:hidden"
-        style={{ bottom: "calc(1.75rem + env(safe-area-inset-bottom, 0px))" }}
-      >
+      <nav className="fixed nav-bottom-safe left-3.5 right-3.5 z-40 lg:hidden">
         <div
           className="h-16 rounded-[22px] grid grid-cols-5 items-center px-1"
           style={{ background: "hsl(var(--ink-card))", boxShadow: "0 24px 60px rgba(0,0,0,0.22)" }}

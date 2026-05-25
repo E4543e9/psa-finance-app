@@ -101,7 +101,7 @@ export default function ReportsPage() {
               <Card key={s.label} className={s.border}>
                 <CardContent className="p-4">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">{s.label}</p>
-                  <p className={`text-xl font-extrabold ${s.color}`}>{formatCurrency(s.value)}</p>
+                  <p className={`text-xl font-extrabold ${s.color}`}>฿{formatCurrency(s.value)}</p>
                 </CardContent>
               </Card>
             ))}
@@ -116,7 +116,7 @@ export default function ReportsPage() {
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                   <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `฿${(v / 1000).toFixed(0)}k`} />
-                  <Tooltip formatter={(v: number) => formatCurrency(v)} contentStyle={{ fontSize: 12 }} />
+                  <Tooltip formatter={(v: number) => `฿${formatCurrency(v)}`} contentStyle={{ fontSize: 12 }} />
                   <Legend wrapperStyle={{ fontSize: 12 }} />
                   <Line type="monotone" dataKey="income" name="รายรับ" stroke="#22c55e" strokeWidth={2} dot={false} />
                   <Line type="monotone" dataKey="expense" name="รายจ่าย" stroke="#ef4444" strokeWidth={2} dot={false} />
@@ -142,7 +142,7 @@ export default function ReportsPage() {
                         <div className="flex-1">
                           <div className="flex justify-between text-sm mb-1">
                             <span className="font-medium">{c.name}</span>
-                            <span className="text-muted-foreground">{formatCurrency(c.amount)}</span>
+                            <span className="text-muted-foreground">฿{formatCurrency(c.amount)}</span>
                           </div>
                           <div className="h-2 rounded-full bg-muted overflow-hidden">
                             <div
