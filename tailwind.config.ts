@@ -15,8 +15,8 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-thai)", "IBM Plex Sans Thai Looped", "sans-serif"],
-        latin: ["var(--font-latin)", "Geist", "sans-serif"],
+        sans: ["var(--font-thai)", "Prompt", "sans-serif"],
+        latin: ["var(--font-thai)", "Prompt", "sans-serif"],
         mono: ["var(--font-mono)", "Geist Mono", "ui-monospace", "monospace"],
       },
       colors: {
