@@ -1,12 +1,24 @@
 import type { Metadata } from "next";
-import { Kanit } from "next/font/google";
+import { IBM_Plex_Sans_Thai_Looped, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
-const kanit = Kanit({
-  subsets: ["latin", "thai"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
-  variable: "--font-kanit",
+const thai = IBM_Plex_Sans_Thai_Looped({
+  subsets: ["thai", "latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-thai",
+  display: "swap",
+});
+
+const latin = Geist({
+  subsets: ["latin"],
+  variable: "--font-latin",
+  display: "swap",
+});
+
+const mono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -18,7 +30,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="th" suppressHydrationWarning>
-      <body className={`${kanit.variable} font-sans antialiased`}>
+      <body className={`${thai.variable} ${latin.variable} ${mono.variable} font-sans antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

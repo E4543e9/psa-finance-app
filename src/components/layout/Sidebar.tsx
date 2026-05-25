@@ -69,22 +69,25 @@ export function Sidebar() {
     <>
       {/* ── Mobile overlay ── */}
       {open && (
-        <div className="fixed inset-0 bg-black/60 z-40 lg:hidden" onClick={() => setOpen(false)} />
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden psa-scrim"
+          onClick={() => setOpen(false)}
+        />
       )}
 
       {/* ── Mobile top bar ── */}
-      <header className="fixed top-0 left-0 right-0 h-14 z-30 lg:hidden bg-background border-b border-border flex items-center px-4 gap-3">
+      <header className="fixed top-0 left-0 right-0 h-14 z-30 lg:hidden bg-background/90 backdrop-blur-md border-b border-border flex items-center px-4 gap-3">
         <button
           onClick={() => setOpen(true)}
-          className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-muted transition-colors flex-shrink-0"
+          className="w-9 h-9 flex items-center justify-center rounded-xl bg-muted/60 hover:bg-muted transition-colors flex-shrink-0"
           aria-label="เมนู"
         >
-          <Menu size={21} />
+          <Menu size={18} strokeWidth={1.8} />
         </button>
-        <span className="font-bold text-base flex-1 truncate">{pageTitle}</span>
+        <span className="font-semibold text-sm flex-1 truncate tracking-tight">{pageTitle}</span>
         {(pendingSplits + pendingRequests) > 0 && (
           <Link href="/notifications">
-            <span className="w-6 h-6 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center">
+            <span className="h-6 min-w-6 px-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
               {pendingSplits + pendingRequests}
             </span>
           </Link>
@@ -93,46 +96,36 @@ export function Sidebar() {
 
       {/* ── Sidebar drawer ── */}
       <aside className={cn(
-        "fixed top-0 left-0 h-full w-64 bg-background border-r border-border z-50 flex flex-col transition-transform duration-200 shadow-xl",
-        "lg:shadow-none lg:translate-x-0 lg:z-30",
-        open ? "translate-x-0" : "-translate-x-full"
+        "fixed top-0 left-0 h-full w-64 z-50 flex flex-col transition-transform duration-300",
+        "lg:translate-x-0 lg:z-30",
+        "bg-ink-card text-ink-card-fg",
+        open ? "translate-x-0 shadow-2xl" : "-translate-x-full"
       )}>
         {/* Logo + close */}
-        <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+        <div className="px-5 py-5 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 flex-shrink-0">
-              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-                <defs>
-                  <linearGradient id="st" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#4ade80" /><stop offset="100%" stopColor="#16a34a" />
-                  </linearGradient>
-                  <linearGradient id="sl" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#15803d" /><stop offset="100%" stopColor="#166534" />
-                  </linearGradient>
-                  <linearGradient id="sr" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#16a34a" /><stop offset="100%" stopColor="#15803d" />
-                  </linearGradient>
-                </defs>
-                <polygon points="32,4 56,18 32,32 8,18" fill="url(#st)" />
-                <polygon points="8,18 32,32 32,56 8,42" fill="url(#sl)" />
-                <polygon points="56,18 32,32 32,56 56,42" fill="url(#sr)" />
+            {/* PSA mark — persimmon */}
+            <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-xl bg-primary">
+              <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+                <path d="M12 3L21 8V16L12 21L3 16V8L12 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" className="text-primary-foreground"/>
+                <path d="M12 3V21M3 8L21 8M3 16L21 16" stroke="currentColor" strokeWidth="1.4" strokeOpacity="0.45" className="text-primary-foreground"/>
               </svg>
             </div>
             <div>
-              <h1 className="font-bold text-base leading-tight">PSA Finance</h1>
-              <p className="text-xs text-muted-foreground">จัดการการเงิน</p>
+              <div className="font-semibold text-sm leading-tight tracking-tight">PSA Finance</div>
+              <div className="text-xs opacity-50 mt-0.5">จัดการการเงิน</div>
             </div>
           </div>
           <button
             onClick={() => setOpen(false)}
-            className="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
+            className="lg:hidden w-8 h-8 flex items-center justify-center rounded-xl opacity-60 hover:opacity-100 hover:bg-white/10 transition-all"
           >
-            <X size={18} />
+            <X size={16} />
           </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
+        <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto scroll">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = pathname === item.href;
@@ -145,23 +138,27 @@ export function Sidebar() {
                 href={item.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
                   active
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    ? "bg-primary text-primary-foreground font-semibold"
+                    : "opacity-60 hover:opacity-100 hover:bg-white/10"
                 )}
               >
-                <Icon size={17} />
+                <Icon size={16} strokeWidth={active ? 2.2 : 1.7} />
                 <span className="flex-1">{item.label}</span>
                 {isNotifications && pendingRequests > 0 && (
-                  <span className={cn("text-xs px-1.5 py-0.5 rounded-full font-bold min-w-5 text-center",
-                    active ? "bg-white/20 text-white" : "bg-red-500 text-white")}>
+                  <span className={cn(
+                    "text-[10px] px-1.5 py-0.5 rounded-full font-bold min-w-5 text-center",
+                    active ? "bg-white/20" : "bg-primary text-primary-foreground"
+                  )}>
                     {pendingRequests}
                   </span>
                 )}
                 {isTransactions && pendingSplits > 0 && (
-                  <span className={cn("text-xs px-1.5 py-0.5 rounded-full font-bold min-w-5 text-center",
-                    active ? "bg-white/20 text-white" : "bg-amber-500 text-white")}>
+                  <span className={cn(
+                    "text-[10px] px-1.5 py-0.5 rounded-full font-bold min-w-5 text-center",
+                    active ? "bg-white/20" : "bg-amber-400 text-black"
+                  )}>
                     {pendingSplits}
                   </span>
                 )}
@@ -171,19 +168,19 @@ export function Sidebar() {
         </nav>
 
         {/* Bottom */}
-        <div className="px-3 py-3 border-t border-border space-y-0.5">
+        <div className="px-3 py-3 border-t border-white/10 space-y-0.5">
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground w-full transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium opacity-60 hover:opacity-100 hover:bg-white/10 w-full transition-all"
           >
-            {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
+            {theme === "dark" ? <Sun size={16} strokeWidth={1.7} /> : <Moon size={16} strokeWidth={1.7} />}
             {theme === "dark" ? "Light Mode" : "Dark Mode"}
           </button>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 w-full transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/15 w-full transition-all"
           >
-            <LogOut size={17} />
+            <LogOut size={16} strokeWidth={1.7} />
             ออกจากระบบ
           </button>
         </div>

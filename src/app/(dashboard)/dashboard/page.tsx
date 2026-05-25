@@ -55,52 +55,55 @@ export default function DashboardPage() {
       {loading ? (
         <Skeleton className="h-44 w-full rounded-2xl" />
       ) : (
-        <div className="rounded-2xl p-6 text-white relative overflow-hidden"
-          style={{ background: "linear-gradient(135deg, #1a56db 0%, #0e9f6e 100%)" }}>
-          {/* decorative circles */}
-          <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/10" />
-          <div className="absolute -bottom-10 -left-6 w-32 h-32 rounded-full bg-white/10" />
+        <div
+          className="rounded-2xl p-6 relative overflow-hidden"
+          style={{ background: "hsl(var(--ink-card))", color: "hsl(var(--ink-card-fg))" }}
+        >
+          {/* decorative glow */}
+          <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full" style={{ background: "hsl(var(--primary) / 0.12)", filter: "blur(40px)" }} />
 
-          <p className="text-sm font-semibold text-white/80 mb-1">ยอดสุทธิเดือนนี้</p>
+          <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: "hsl(var(--ink-card-fg) / 0.5)" }}>ยอดสุทธิเดือนนี้</p>
           <p className={cn(
-            "text-4xl font-extrabold tracking-tight mb-5",
-            net < 0 && "text-red-200"
+            "text-4xl font-semibold tracking-tight mb-5 mono",
+            net < 0 && "text-negative"
           )}>
-            {net < 0 ? "-" : ""}{formatCurrency(Math.abs(net))}
+            {net < 0 ? "-" : ""}฿{formatCurrency(Math.abs(net))}
           </p>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                <TrendingUp size={15} />
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "hsl(var(--positive) / 0.2)" }}>
+                <TrendingUp size={15} style={{ color: "hsl(var(--positive))" }} />
               </div>
               <div>
-                <p className="text-xs text-white/70 font-medium">รายรับ</p>
-                <p className="text-base font-bold">{formatCurrency(income)}</p>
+                <p className="text-xs font-medium" style={{ color: "hsl(var(--ink-card-fg) / 0.5)" }}>รายรับ</p>
+                <p className="text-sm font-semibold mono">{formatCurrency(income)}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                <TrendingDown size={15} />
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "hsl(var(--negative) / 0.2)" }}>
+                <TrendingDown size={15} style={{ color: "hsl(var(--negative))" }} />
               </div>
               <div>
-                <p className="text-xs text-white/70 font-medium">รายจ่าย</p>
-                <p className="text-base font-bold">{formatCurrency(expense)}</p>
+                <p className="text-xs font-medium" style={{ color: "hsl(var(--ink-card-fg) / 0.5)" }}>รายจ่าย</p>
+                <p className="text-sm font-semibold mono">{formatCurrency(expense)}</p>
               </div>
             </div>
           </div>
 
           {income > 0 && (
-            <div className="mt-4 pt-4 border-t border-white/20 flex items-center justify-between">
-              <p className="text-xs text-white/70">อัตราออมเดือนนี้</p>
+            <div className="mt-4 pt-4 flex items-center justify-between" style={{ borderTop: "1px solid hsl(var(--ink-card-fg) / 0.12)" }}>
+              <p className="text-xs" style={{ color: "hsl(var(--ink-card-fg) / 0.5)" }}>อัตราออมเดือนนี้</p>
               <div className="flex items-center gap-2">
-                <div className="h-1.5 w-24 bg-white/20 rounded-full overflow-hidden">
+                <div className="h-1.5 w-24 rounded-full overflow-hidden" style={{ background: "hsl(var(--ink-card-fg) / 0.15)" }}>
                   <div
-                    className="h-full rounded-full bg-white transition-all"
-                    style={{ width: `${Math.max(0, Math.min(savingsRate, 100))}%` }}
+                    className="h-full rounded-full transition-all"
+                    style={{ width: `${Math.max(0, Math.min(savingsRate, 100))}%`, background: "hsl(var(--primary))" }}
                   />
                 </div>
-                <p className={cn("text-xs font-bold", savingsRate >= 20 ? "text-green-200" : "text-yellow-200")}>
+                <p className="text-xs font-semibold mono" style={{ color: savingsRate >= 20 ? "hsl(var(--positive))" : "hsl(var(--primary))" }}>
                   {savingsRate}%
                 </p>
               </div>
@@ -112,7 +115,7 @@ export default function DashboardPage() {
       {/* ── Donut + Categories ── */}
       <div className="bg-card border border-border rounded-2xl p-4">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-bold text-sm">รายจ่ายตามหมวดหมู่</h2>
+          <h2 className="font-semibold text-sm">รายจ่ายตามหมวดหมู่</h2>
           <span className="text-xs text-muted-foreground">เดือนนี้</span>
         </div>
 
@@ -256,8 +259,8 @@ export default function DashboardPage() {
                   </p>
                 </div>
                 <span className={cn(
-                  "text-sm font-extrabold flex-shrink-0",
-                  t.type === "INCOME" ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"
+                  "text-sm font-semibold flex-shrink-0 mono",
+                  t.type === "INCOME" ? "text-positive" : "text-negative"
                 )}>
                   {t.type === "INCOME" ? "+" : "-"}{formatCurrency(parseFloat(t.amount))}
                 </span>
@@ -287,7 +290,8 @@ export default function DashboardPage() {
           {/* รายรับ */}
           <button
             onClick={() => { setFormType("INCOME"); setShowForm(true); setFabOpen(false); }}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-green-500 text-white text-sm font-bold shadow-lg active:scale-95 transition-transform whitespace-nowrap"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold shadow-lg active:scale-95 transition-transform whitespace-nowrap"
+            style={{ background: "hsl(var(--positive))", color: "#fff" }}
           >
             <TrendingUp size={16} strokeWidth={2.5} />
             + รายรับ
@@ -295,7 +299,8 @@ export default function DashboardPage() {
           {/* รายจ่าย */}
           <button
             onClick={() => { setFormType("EXPENSE"); setShowForm(true); setFabOpen(false); }}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-red-500 text-white text-sm font-bold shadow-lg active:scale-95 transition-transform whitespace-nowrap"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold shadow-lg active:scale-95 transition-transform whitespace-nowrap"
+            style={{ background: "hsl(var(--negative))", color: "#fff" }}
           >
             <TrendingDown size={16} strokeWidth={2.5} />
             − รายจ่าย
@@ -322,8 +327,8 @@ export default function DashboardPage() {
             <CardContent className="pt-5 pb-8 px-5">
               <div className="flex items-center justify-between mb-4">
                 <h2 className={cn(
-                  "text-base font-bold",
-                  formType === "INCOME" ? "text-green-600" : "text-red-500"
+                  "text-base font-semibold",
+                  formType === "INCOME" ? "text-positive" : "text-negative"
                 )}>
                   {formType === "INCOME" ? "+ เพิ่มรายรับ" : "− เพิ่มรายจ่าย"}
                 </h2>

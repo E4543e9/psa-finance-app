@@ -15,7 +15,9 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-kanit)", "Kanit", "sans-serif"],
+        sans: ["var(--font-thai)", "IBM Plex Sans Thai Looped", "sans-serif"],
+        latin: ["var(--font-latin)", "Geist", "sans-serif"],
+        mono: ["var(--font-mono)", "Geist Mono", "ui-monospace", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -51,13 +53,25 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        "ink-card": {
+          DEFAULT: "hsl(var(--ink-card))",
+          fg: "hsl(var(--ink-card-fg))",
+        },
+        positive: {
+          DEFAULT: "hsl(var(--positive))",
+          bg: "hsl(var(--positive-bg))",
+        },
+        negative: {
+          DEFAULT: "hsl(var(--negative))",
+          bg: "hsl(var(--negative-bg))",
+        },
         income: {
-          DEFAULT: "hsl(142, 76%, 36%)",
-          foreground: "hsl(0, 0%, 100%)",
+          DEFAULT: "hsl(var(--positive))",
+          foreground: "hsl(var(--positive-bg))",
         },
         expense: {
-          DEFAULT: "hsl(0, 84%, 60%)",
-          foreground: "hsl(0, 0%, 100%)",
+          DEFAULT: "hsl(var(--negative))",
+          foreground: "hsl(var(--negative-bg))",
         },
       },
       borderRadius: {
