@@ -24,8 +24,12 @@ const mono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PSA Finance",
-  description: "ระบบจัดการการเงินส่วนตัว",
+  title: "psa. finance",
+  description: "finance, made calm",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

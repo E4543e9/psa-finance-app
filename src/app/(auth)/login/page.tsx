@@ -60,11 +60,8 @@ export default function LoginPage() {
       <div className="w-full max-w-sm psa-fade">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{ background: "hsl(16 100% 64% / 0.15)" }}>
-            <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" style={{ color: "#FF6E48" }}>
-              <path d="M12 3L21 8V16L12 21L3 16V8L12 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>
-              <path d="M12 3V21M3 8L21 8M3 16L21 16" stroke="currentColor" strokeWidth="1.3" strokeOpacity="0.5"/>
-            </svg>
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4" style={{ background: "#0C0B0A", boxShadow: "0 0 0 1.5px #FF5B3640, 0 8px 32px rgba(0,0,0,0.5)" }}>
+            <span className="font-black text-2xl leading-none select-none" style={{ color: "#FF5B36", fontFamily: "system-ui, sans-serif", letterSpacing: "-0.5px" }}>P.</span>
           </div>
           <h1 className="text-2xl font-semibold tracking-tight" style={{ color: "hsl(42 25% 90%)" }}>psa<span style={{ color: "#FF6E48" }}>.</span></h1>
           <p className="text-sm mt-1" style={{ color: "hsl(40 8% 45%)" }}>finance, made calm</p>

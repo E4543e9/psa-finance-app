@@ -82,7 +82,10 @@ export function Sidebar() {
         >
           <Menu size={18} strokeWidth={1.8} />
         </button>
-        <span className="font-semibold text-sm flex-1 truncate tracking-tight">{pageTitle}</span>
+        <span className="font-bold text-sm flex-1 truncate tracking-tight">
+          psa<span style={{ color: "#FF5B36" }}>.</span>
+          <span className="font-normal text-muted-foreground ml-1.5">{pageTitle}</span>
+        </span>
         {(pendingSplits + pendingRequests) > 0 && (
           <Link href="/notifications">
             <span className="h-6 min-w-6 px-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
@@ -102,16 +105,15 @@ export function Sidebar() {
         {/* Logo + close */}
         <div className="px-5 py-5 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-3">
-            {/* PSA mark — persimmon */}
-            <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-xl bg-primary">
-              <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-                <path d="M12 3L21 8V16L12 21L3 16V8L12 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" className="text-primary-foreground"/>
-                <path d="M12 3V21M3 8L21 8M3 16L21 16" stroke="currentColor" strokeWidth="1.4" strokeOpacity="0.45" className="text-primary-foreground"/>
-              </svg>
+            {/* PSA mark */}
+            <div className="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-xl" style={{ background: "#0C0B0A", boxShadow: "0 0 0 1.5px #FF5B3633" }}>
+              <span className="font-black text-base leading-none select-none" style={{ color: "#FF5B36", fontFamily: "system-ui, sans-serif", letterSpacing: "-0.5px" }}>P.</span>
             </div>
             <div>
-              <div className="font-semibold text-sm leading-tight tracking-tight">PSA Finance</div>
-              <div className="text-xs opacity-50 mt-0.5">จัดการการเงิน</div>
+              <div className="font-bold text-sm leading-tight tracking-tight">
+                psa<span style={{ color: "#FF5B36" }}>.</span>
+              </div>
+              <div className="text-[10px] opacity-40 mt-0.5 tracking-wide">finance, made calm</div>
             </div>
           </div>
           <button
