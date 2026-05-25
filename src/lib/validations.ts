@@ -3,12 +3,12 @@ import { z } from "zod";
 export const transactionSchema = z.object({
   type: z.enum(["INCOME", "EXPENSE"]),
   amount: z.coerce.number().positive("จำนวนเงินต้องมากกว่า 0"),
-  description: z.string().min(1, "กรุณาระบุรายละเอียด").max(255),
+  description: z.string().max(255).default(""),
   date: z.string().min(1, "กรุณาระบุวันที่"),
   categoryId: z.string().min(1, "กรุณาเลือกหมวดหมู่"),
-  note: z.string().max(1000).optional(),
-  paidTo: z.string().max(255).optional(),
-  splitWith: z.string().max(255).optional(),
+  note: z.string().max(1000).nullish(),
+  paidTo: z.string().max(255).nullish(),
+  splitWith: z.string().max(255).nullish(),
   splitAmount: z.coerce.number().min(0).optional(),
 });
 

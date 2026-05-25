@@ -27,6 +27,7 @@ export function MobileNav() {
   const [showModal, setShowModal] = useState(false);
   const [type, setType] = useState<"EXPENSE" | "INCOME">("EXPENSE");
   const [amount, setAmount] = useState("");
+  const [amountFocused, setAmountFocused] = useState(false);
   const [catId, setCatId] = useState("");
   const [desc, setDesc] = useState("");
   const [note, setNote] = useState("");
@@ -74,7 +75,6 @@ export function MobileNav() {
   async function handleSave() {
     if (!amount || parseFloat(amount) <= 0) { toast.error("ระบุจำนวนเงิน"); return; }
     if (!catId) { toast.error("เลือกหมวดหมู่"); return; }
-    if (!desc.trim()) { toast.error("ระบุรายการ"); return; }
     setSaving(true);
     const res = await fetch("/api/transactions", {
       method: "POST",
@@ -189,18 +189,28 @@ export function MobileNav() {
             </div>
 
             {/* Amount */}
-            <div className="flex items-center justify-center gap-2 py-1">
-              <span className="text-3xl font-light text-muted-foreground">฿</span>
-              <input
-                type="number"
-                inputMode="decimal"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0"
-                autoFocus
-                className="text-5xl font-extrabold w-48 text-center bg-transparent outline-none mono"
-                style={{ color: type === "EXPENSE" ? "hsl(var(--negative))" : "hsl(var(--positive))" }}
-              />
+            <div className="text-center py-1">
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-3xl font-light text-muted-foreground">฿</span>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={amountFocused ? amount : (amount ? Number(amount).toLocaleString("th-TH") : "")}
+                  onFocus={() => setAmountFocused(true)}
+                  onBlur={() => setAmountFocused(false)}
+                  onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ""))}
+                  placeholder="0"
+                  autoFocus
+                  className="text-5xl font-extrabold w-48 text-center bg-transparent outline-none mono"
+                  style={{ color: type === "EXPENSE" ? "hsl(var(--negative))" : "hsl(var(--positive))" }}
+                />
+              </div>
+              <p className="text-xs mt-0.5"
+                style={{ color: type === "EXPENSE" ? "hsl(var(--negative))" : "hsl(var(--positive))", opacity: 0.65 }}>
+                {amount && !amountFocused
+                  ? `${Number(amount).toLocaleString("th-TH")} บาท`
+                  : "บาท"}
+              </p>
             </div>
 
             {/* Categories */}

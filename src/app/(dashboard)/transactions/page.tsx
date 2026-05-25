@@ -60,6 +60,7 @@ function TransactionModal({
   const isEdit = !!initial?.id;
   const [type, setType] = useState<"EXPENSE" | "INCOME">(initial?.type ?? "EXPENSE");
   const [amount, setAmount] = useState(initial?.amount ? Math.round(parseFloat(initial.amount)).toString() : "");
+  const [amountFocused, setAmountFocused] = useState(false);
   const [catId, setCatId] = useState(initial?.categoryId ?? "");
   const [desc, setDesc] = useState(initial?.description ?? "");
   const [note, setNote] = useState(initial?.note ?? "");
@@ -69,7 +70,7 @@ function TransactionModal({
   const cats = categories.filter((c) => c.type === type);
 
   async function handleSubmit() {
-    if (!amount || !catId || !desc) { toast.error("กรอกข้อมูลให้ครบ"); return; }
+    if (!amount || !catId) { toast.error("กรอกข้อมูลให้ครบ"); return; }
     setSaving(true);
     const body = { type, amount: parseFloat(amount), categoryId: catId, description: desc, note: note || null, date };
     const res = isEdit
@@ -79,83 +80,114 @@ function TransactionModal({
     setSaving(false);
   }
 
+  const amountColor = type === "EXPENSE" ? "hsl(var(--negative))" : "hsl(var(--positive))";
+  const formattedAmount = amount
+    ? Number(amount).toLocaleString("th-TH")
+    : "";
+
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="w-full max-w-md rounded-t-3xl p-6 pb-10 flex flex-col gap-5"
-        style={{ background: "hsl(var(--background))", boxShadow: "0 -20px 60px rgba(0,0,0,0.35)" }}>
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+
+      <div
+        className="relative w-full max-w-md rounded-t-3xl flex flex-col"
+        style={{
+          background: "hsl(var(--background))",
+          boxShadow: "0 -20px 60px rgba(0,0,0,0.35)",
+          maxHeight: "90svh",
+        }}
+      >
         {/* Handle */}
-        <div className="w-10 h-1 rounded-full bg-muted mx-auto -mt-1" />
-
-        {/* Type toggle */}
-        <div className="flex rounded-2xl overflow-hidden" style={{ background: "hsl(var(--muted))" }}>
-          {(["EXPENSE", "INCOME"] as const).map((t) => (
-            <button key={t} onClick={() => { setType(t); setCatId(""); }}
-              className={cn("flex-1 py-2.5 text-sm font-bold transition-all rounded-2xl",
-                type === t ? "shadow-sm" : "opacity-50")}
-              style={type === t
-                ? { background: "hsl(var(--background))", color: t === "EXPENSE" ? "hsl(var(--negative))" : "hsl(var(--positive))" }
-                : {}}>
-              {t === "EXPENSE" ? "− รายจ่าย" : "+ รายรับ"}
-            </button>
-          ))}
+        <div className="flex-shrink-0 pt-3 pb-1 flex justify-center">
+          <div className="w-10 h-1 rounded-full bg-muted" />
         </div>
 
-        {/* Amount */}
-        <div className="text-center">
-          <p className="text-xs text-muted-foreground mb-1">จำนวน</p>
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-2xl font-light text-muted-foreground">฿</span>
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0"
-              className="text-4xl font-extrabold w-48 text-center bg-transparent outline-none mono"
-              style={{ color: type === "EXPENSE" ? "hsl(var(--negative))" : "hsl(var(--positive))" }}
-            />
-          </div>
-        </div>
+        {/* Scrollable content */}
+        <div className="overflow-y-auto overscroll-contain flex flex-col gap-5 px-6 pt-2 pb-4">
 
-        {/* Categories */}
-        <div>
-          <p className="text-xs font-semibold text-muted-foreground mb-2">หมวด</p>
-          <div className="grid grid-cols-5 gap-2">
-            {cats.map((c) => (
-              <button key={c.id} onClick={() => setCatId(c.id)}
-                className={cn("flex flex-col items-center gap-1 p-2 rounded-2xl text-xs font-medium transition-all",
-                  catId === c.id ? "ring-2" : "opacity-60 hover:opacity-100")}
-                style={catId === c.id ? {
-                  background: type === "EXPENSE" ? "hsl(var(--negative) / 0.15)" : "hsl(var(--positive) / 0.15)",
-                  border: `2px solid ${type === "EXPENSE" ? "hsl(var(--negative))" : "hsl(var(--positive))"}`,
-                } : { background: "hsl(var(--muted))", border: "2px solid transparent" }}>
-                <span className="text-xl">{c.icon ?? "📦"}</span>
-                <span className="leading-tight text-center" style={{ fontSize: "10px" }}>{c.name}</span>
+          {/* Type toggle */}
+          <div className="flex rounded-2xl overflow-hidden" style={{ background: "hsl(var(--muted))" }}>
+            {(["EXPENSE", "INCOME"] as const).map((t) => (
+              <button key={t} onClick={() => { setType(t); setCatId(""); }}
+                className={cn("flex-1 py-2.5 text-sm font-bold transition-all rounded-2xl",
+                  type === t ? "shadow-sm" : "opacity-50")}
+                style={type === t
+                  ? { background: "hsl(var(--background))", color: t === "EXPENSE" ? "hsl(var(--negative))" : "hsl(var(--positive))" }
+                  : {}}>
+                {t === "EXPENSE" ? "− รายจ่าย" : "+ รายรับ"}
               </button>
             ))}
           </div>
-        </div>
 
-        {/* Description + Note + Date */}
-        <div className="space-y-3">
-          <input value={desc} onChange={(e) => setDesc(e.target.value)}
-            placeholder="รายการ / ร้านค้า"
-            className="w-full px-4 py-3 rounded-2xl bg-muted text-sm font-medium outline-none focus:ring-2 focus:ring-primary/50" />
-          <div className="flex gap-3">
-            <input value={note} onChange={(e) => setNote(e.target.value)}
-              placeholder="โน้ต (เลือกใส่)"
-              className="flex-1 px-4 py-3 rounded-2xl bg-muted text-sm outline-none focus:ring-2 focus:ring-primary/50" />
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
-              className="px-3 py-3 rounded-2xl bg-muted text-sm outline-none focus:ring-2 focus:ring-primary/50" />
+          {/* Amount */}
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1">
+              <span className="text-2xl font-light text-muted-foreground">฿</span>
+              <input
+                type="text"
+                inputMode="decimal"
+                value={amountFocused ? amount : formattedAmount}
+                onFocus={() => setAmountFocused(true)}
+                onBlur={() => setAmountFocused(false)}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/[^0-9.]/g, "");
+                  setAmount(raw);
+                }}
+                placeholder="0"
+                className="text-4xl font-extrabold w-48 text-center bg-transparent outline-none mono"
+                style={{ color: amountColor }}
+              />
+            </div>
+            <p className="text-xs mt-1" style={{ color: amountColor, opacity: 0.7 }}>
+              {amount && !amountFocused ? `${formattedAmount} บาท` : "บาท"}
+            </p>
           </div>
+
+          {/* Categories */}
+          <div>
+            <p className="text-xs font-semibold text-muted-foreground mb-2">หมวด</p>
+            <div className="grid grid-cols-5 gap-2">
+              {cats.map((c) => (
+                <button key={c.id} onClick={() => setCatId(c.id)}
+                  className={cn("flex flex-col items-center gap-1 p-2 rounded-2xl text-xs font-medium transition-all",
+                    catId === c.id ? "ring-2" : "opacity-60 hover:opacity-100")}
+                  style={catId === c.id ? {
+                    background: type === "EXPENSE" ? "hsl(var(--negative) / 0.15)" : "hsl(var(--positive) / 0.15)",
+                    border: `2px solid ${type === "EXPENSE" ? "hsl(var(--negative))" : "hsl(var(--positive))"}`,
+                  } : { background: "hsl(var(--muted))", border: "2px solid transparent" }}>
+                  <span className="text-xl">{c.icon ?? "📦"}</span>
+                  <span className="leading-tight text-center" style={{ fontSize: "10px" }}>{c.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Description + Note + Date */}
+          <div className="space-y-3">
+            <input value={desc} onChange={(e) => setDesc(e.target.value)}
+              placeholder="รายการ / ร้านค้า"
+              className="w-full px-4 py-3 rounded-2xl bg-muted text-sm font-medium outline-none focus:ring-2 focus:ring-primary/50" />
+            <div className="flex gap-3">
+              <input value={note} onChange={(e) => setNote(e.target.value)}
+                placeholder="โน้ต (เลือกใส่)"
+                className="flex-1 min-w-0 px-4 py-3 rounded-2xl bg-muted text-sm outline-none focus:ring-2 focus:ring-primary/50" />
+              <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
+                className="shrink-0 px-3 py-3 rounded-2xl bg-muted text-sm outline-none focus:ring-2 focus:ring-primary/50" />
+            </div>
+          </div>
+
         </div>
 
-        {/* Save */}
-        <button onClick={handleSubmit} disabled={saving}
-          className="w-full py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
-          style={{ background: "hsl(var(--ink-card))", color: "hsl(var(--ink-card-fg))" }}>
-          <Check size={18} strokeWidth={2.5} />
-          {saving ? "กำลังบันทึก..." : "บันทึก"}
-        </button>
+        {/* Save — fixed at bottom */}
+        <div className="flex-shrink-0 px-6 pt-2 pb-10">
+          <button onClick={handleSubmit} disabled={saving}
+            className="w-full py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+            style={{ background: "hsl(var(--ink-card))", color: "hsl(var(--ink-card-fg))" }}>
+            <Check size={18} strokeWidth={2.5} />
+            {saving ? "กำลังบันทึก..." : "บันทึก"}
+          </button>
+        </div>
       </div>
     </div>
   );
