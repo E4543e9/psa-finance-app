@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Prompt, Geist_Mono } from "next/font/google";
+import { Prompt, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -11,8 +11,9 @@ const thai = Prompt({
   display: "swap",
 });
 
-const mono = Geist_Mono({
+const mono = Space_Grotesk({
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-mono",
   display: "swap",
 });
