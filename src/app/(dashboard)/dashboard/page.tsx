@@ -47,7 +47,11 @@ export default function DashboardPage() {
     setLoading(false);
   }
 
-  useEffect(() => { fetchAll(); }, []);
+  useEffect(() => {
+    fetchAll();
+    window.addEventListener("psa:data-changed", fetchAll);
+    return () => window.removeEventListener("psa:data-changed", fetchAll);
+  }, []);
 
   const net = data?.summary.netBalance ?? 0;
   const income = data?.summary.totalIncome ?? 0;

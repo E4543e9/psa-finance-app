@@ -84,6 +84,7 @@ export function MobileNav() {
     if (res.ok) {
       toast.success("บันทึกแล้ว 🎉");
       setShowModal(false);
+      window.dispatchEvent(new CustomEvent("psa:data-changed"));
       router.refresh();
     } else {
       toast.error("เกิดข้อผิดพลาด");
