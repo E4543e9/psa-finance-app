@@ -95,11 +95,22 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
   .mono {
     font-family: var(--font-mono), "Space Grotesk", sans-serif;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
+  }
+}
+
+/* ── PWA safe-area padding (mobile bottom nav) ── */
+.pb-safe-nav {
+  padding-bottom: calc(8rem + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 1024px) {
+  .pb-safe-nav {
+    padding-bottom: 2rem; /* lg:pb-8 */
   }
 }
 

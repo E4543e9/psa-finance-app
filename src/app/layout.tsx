@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Prompt, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -18,12 +18,28 @@ const mono = Space_Grotesk({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0D0B09",
+};
+
 export const metadata: Metadata = {
   title: "psa. finance",
   description: "finance, made calm",
+  manifest: "/manifest.json",
   icons: {
     icon: "/icon.svg",
-    apple: "/icon.svg",
+    apple: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "psa.",
   },
 };
 
